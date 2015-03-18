@@ -639,13 +639,33 @@ Automate *automate_accessible( const Automate * automate ){
 	return res;
 }
 
-Automate *miroir( const Automate * automate){
-   A_FAIRE_RETURN(NULL);
+void inverser_initiaux_vers_finaux(const intptr_t elem, void* automate)
+{
+  ajouter_etat_final(((Automate*) automate), elem);
 }
 
-void action_nombre_de_transitions(
-	int origine, char lettre, int fin, void* data
-){
+void inverser_finaux_vers_initiaux(const intptr_t elem, void* automate)
+{
+  ajouter_etat_initial(((Automate*) automate), elem);
+}
+
+void inverser_transition(int origine, char lettre, int fin, void* automate)
+{
+  ajouter_transition(((Automate*)automate), fin, lettre, origine);
+}
+
+Automate *miroir( const Automate * automate)
+{
+  /*Fonction en construction*/
+  Automate * nouvel_automate = creer_automate();
+  pour_tout_element(automate -> initiaux, inverser_initiaux_vers_finaux, ((Automate*) nouvel_automate));
+  pour_tout_element(automate -> finaux, inverser_finaux_vers_initiaux, ((Automate*) nouvel_automate));
+  pour_toute_transition(automate, inverser_transition, ((Automate*) nouvel_automate));
+
+  return nouvel_automate;
+}
+
+void action_nombre_de_transitions(int origine, char lettre, int fin, void* data){
 	int* nb = (int*) data;
 	(*nb) += 1;
 }
@@ -823,6 +843,11 @@ Automate * creer_automate_deterministe( const Automate* automate ){
 }
 
 Automate * creer_automate_minimal( const Automate* automate ){
-   A_FAIRE_RETURN(NULL);   
+  //modéle de Brzozowski
+  Automate* tmp_automate = miroir(automate);
+  tmp_automate = creer_automate_deterministe(tmp_automate);
+  tmp_automate = miroir(tmp_automate);
+  Automate* automate_minimal = creer_automate_deterministe(tmp_automate);
+  return automate_minimal;   
 }
 
