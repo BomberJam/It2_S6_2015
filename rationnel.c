@@ -108,26 +108,22 @@ char get_lettre(Rationnel* rat)
 
 int get_position_min(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
    return rat->position_min;
 }
 
 int get_position_max(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
    return rat->position_max;
 }
 
 void set_position_min(Rationnel* rat, int valeur)
 {
-   assert (get_etiquette(rat) == LETTRE);
    rat->position_min = valeur;
    return;
 }
 
 void set_position_max(Rationnel* rat, int valeur)
 {
-   assert (get_etiquette(rat) == LETTRE);
    rat->position_max = valeur;
    return;
 }
@@ -279,9 +275,35 @@ int rationnel_to_dot_aux(Rationnel *rat, FILE *output, int pere, int noeud_coura
    return noeud_courant;
 }
 
+Rationnel* numerotation_rationnel(Rationnel* rat, int valeur){
+  
+  if(get_etiquette(rat) == LETTRE)
+    {
+      set_position_min (rat, ++valeur);
+      set_position_max (rat, valeur);
+      return rat;
+    }
+
+  if(fils_gauche (rat) != NULL)
+    {
+      numerotation_rationnel(fils_gauche(rat), valeur);
+    }
+  if(fils_droit (rat) != NULL)
+    {
+      numerotation_rationnel(fils_droit(rat), valeur);
+    }
+
+  if(fils (rat) != NULL)
+    {
+      numerotation_rationnel(fils(rat),valeur);
+    }
+
+  return rat;
+}
+
 void numeroter_rationnel(Rationnel *rat)
-{
-   A_FAIRE;
+{  
+  rat = numerotation_rationnel(rat,0);
 }
 
 bool contient_mot_vide(Rationnel *rat)
@@ -289,9 +311,26 @@ bool contient_mot_vide(Rationnel *rat)
    A_FAIRE_RETURN(true);
 }
 
-Ensemble *premier(Rationnel *rat)
+/*void trouver_premier(Ensemble * e, Rationnel * rat){ //TODO
+  if(!rat)
+    return NULL;
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+      return Epsilon();
+      break;
+    case LETTRE:
+      return Lettre(get_lettre(rat));
+      break;
+    }
+ }*/
+
+Ensemble *premier(Rationnel *rat)  //TODO
 {
-   A_FAIRE_RETURN(NULL);
+  /*Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  trouver_premier(e, rat);
+  return e;*/
+  return NULL;
 }
 
 Ensemble *dernier(Rationnel *rat)
