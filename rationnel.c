@@ -130,25 +130,21 @@ void set_position_max(Rationnel* rat, int valeur)
 
 Rationnel *fils_gauche(Rationnel* rat)
 {
-   assert((get_etiquette(rat) == CONCAT) || (get_etiquette(rat) == UNION));
    return rat->gauche;
 }
 
 Rationnel *fils_droit(Rationnel* rat)
 {
-   assert((get_etiquette(rat) == CONCAT) || (get_etiquette(rat) == UNION));
    return rat->droit;
 }
 
 Rationnel *fils(Rationnel* rat)
 {
-   assert(get_etiquette(rat) == STAR);
    return rat->gauche;
 }
 
 Rationnel *pere(Rationnel* rat)
 {
-   assert(!est_racine(rat));
    return rat->pere;
 }
 
@@ -279,27 +275,33 @@ Rationnel* numerotation_rationnel(Rationnel* rat, int valeur){
   
   if(get_etiquette(rat) == LETTRE)
     {
-      set_position_min (rat, ++valeur);
-      set_position_max (rat, valeur);
+      set_position_min (rat, ++valeur );
+      set_position_max (rat,valeur);
       return rat;
     }
 
   if(fils_gauche (rat) != NULL)
     {
-      Rationnel* rat_min = numerotation_rationnel(fils_gauche(rat), valeur);
-      set_position_min(rat,get_position_min(rat_min));
+      if(get_etiquette(rat) == STAR)
+	{
+	  Rationnel* minmax = numerotation_rationnel(fils(rat),valeur);      
+	  set_position_min (rat, get_position_min(minmax));
+	  set_position_max (rat, get_position_max(minmax));
+	  valeur = get_position_max(minmax);
+	}
+      else
+	{
+	  Rationnel* rat_min = numerotation_rationnel(fils_gauche(rat), valeur);
+	  set_position_min(rat,get_position_min(rat_min));
+	  valeur = get_position_max(rat_min);
+	}
     }
+
   if(fils_droit (rat) != NULL)
     {
       Rationnel* rat_max = numerotation_rationnel(fils_droit(rat), valeur);
       set_position_max(rat,get_position_max(rat_max));
-    }
- 
-  if(fils (rat) != NULL)
-    {
-      Rationnel* minmax = numerotation_rationnel(fils(rat),valeur);      
-      set_position_min (rat, get_position_min(minmax));
-      set_position_max (rat, get_position_max(minmax));
+      valeur = get_position_max(rat_max);
     }
 
   return rat;

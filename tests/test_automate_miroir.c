@@ -22,7 +22,6 @@
 #include "automate.h"
 #include "outils.h"
 
-
 int test_automate_miroir(){
 
 	int result = 1;
