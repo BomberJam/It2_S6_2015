@@ -286,16 +286,20 @@ Rationnel* numerotation_rationnel(Rationnel* rat, int valeur){
 
   if(fils_gauche (rat) != NULL)
     {
-      numerotation_rationnel(fils_gauche(rat), valeur);
+      Rationnel* rat_min = numerotation_rationnel(fils_gauche(rat), valeur);
+      set_position_min(rat,get_position_min(rat_min));
     }
   if(fils_droit (rat) != NULL)
     {
-      numerotation_rationnel(fils_droit(rat), valeur);
+      Rationnel* rat_max = numerotation_rationnel(fils_droit(rat), valeur);
+      set_position_max(rat,get_position_max(rat_max));
     }
-
+ 
   if(fils (rat) != NULL)
     {
-      numerotation_rationnel(fils(rat),valeur);
+      Rationnel* minmax = numerotation_rationnel(fils(rat),valeur);      
+      set_position_min (rat, get_position_min(minmax));
+      set_position_max (rat, get_position_max(minmax));
     }
 
   return rat;
@@ -350,7 +354,22 @@ Automate *Glushkov(Rationnel *rat)
 
 bool meme_langage (const char *expr1, const char* expr2)
 {
-   A_FAIRE_RETURN(true);
+  /*Rationnel *rat1 = expression_to_rationnel(expr1);
+  numeroter_rationnel(rat1);
+  Automate *auto1 = Glushkov(rat1);
+  Automate *auto_deter1 = creer_automate_deterministe(auto1);
+  Automate *auto_mini1 =  creer_automate_minimal(auto_deter1);
+  rat1 = Arden(auto_mini1);
+
+  Rationnel *rat2 = expression_to_rationnel(expr2);
+  numeroter_rationnel(rat2);
+  Automate *auto2 = Glushkov(rat2);
+  Automate *auto_deter2 = creer_automate_deterministe(auto2);
+  Automate *auto_mini2 =  creer_automate_minimal(auto_deter2);
+  rat2 = Arden(auto_mini2);
+  
+  return(rat1 == rat2); // il existe surement une fonction qui pour comparer 2 rat*/
+  return false;
 }
 
 Systeme systeme(Automate *automate)
