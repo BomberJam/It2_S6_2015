@@ -309,7 +309,7 @@ Rationnel* numerotation_rationnel(Rationnel* rat, int valeur){
 
 void numeroter_rationnel(Rationnel *rat)
 {  
-  rat = numerotation_rationnel(rat,0);
+  numerotation_rationnel(rat,0);
 }
 
 bool contient_mot_vide(Rationnel *rat)
