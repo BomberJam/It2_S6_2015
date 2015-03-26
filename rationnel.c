@@ -334,8 +334,7 @@ void trouver_premier(Ensemble * e, Rationnel * rat){
     case EPSILON:
       break;
       
-    case LETTRE:
-      print_rationnel(rat);      
+    case LETTRE:     
       ajouter_element(e,(intptr_t)get_position_min(rat));
       break;
       
@@ -347,7 +346,6 @@ void trouver_premier(Ensemble * e, Rationnel * rat){
     case CONCAT:
       if(contient_mot_vide(fils_gauche(rat)))
 	{
-	  printf("contient pas le mot vide\n");
 	  trouver_premier(e,fils_droit(rat));
 	}	    
       trouver_premier(e,fils_gauche(rat));
@@ -366,9 +364,44 @@ Ensemble *premier(Rationnel *rat)
   return e;
 }
 
+
+void trouver_dernier(Ensemble * e, Rationnel * rat){
+  if(!rat)
+    return;
+  
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+      break;
+      
+    case LETTRE:     
+      ajouter_element(e,(intptr_t)get_position_min(rat));
+      break;
+      
+    case UNION:
+      trouver_dernier(e,fils_droit(rat));
+      trouver_dernier(e,fils_gauche(rat));
+      break;
+
+    case CONCAT:
+      if(contient_mot_vide(fils_droit(rat)))
+	{
+	  trouver_dernier(e,fils_gauche(rat));
+	}	    
+      trouver_dernier(e,fils_droit(rat));
+      break;
+      
+    case STAR:
+      trouver_dernier(e,fils(rat));
+      break;    
+    }  
+}
+
 Ensemble *dernier(Rationnel *rat)
 {
-   A_FAIRE_RETURN(NULL);
+   Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  trouver_dernier(e, rat);
+  return e;
 }
 
 Ensemble *suivant(Rationnel *rat, int position)
