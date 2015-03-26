@@ -314,29 +314,56 @@ void numeroter_rationnel(Rationnel *rat)
 
 bool contient_mot_vide(Rationnel *rat)
 {
-   A_FAIRE_RETURN(true);
+    if(get_etiquette(rat) == EPSILON || get_etiquette(rat) == STAR)
+    {
+      return true;
+    }
+    
+    if(fils_gauche (rat) != NULL)  
+      if(fils_droit (rat) != NULL)
+	return contient_mot_vide(fils_gauche(rat)) || contient_mot_vide(fils_droit(rat));
+    
+    return false;
 }
 
-/*void trouver_premier(Ensemble * e, Rationnel * rat){ //TODO
+void trouver_premier(Ensemble * e, Rationnel * rat){
   if(!rat)
-    return NULL;
+    return;  
   switch(get_etiquette(rat))
     {
     case EPSILON:
-      return Epsilon();
       break;
+      
     case LETTRE:
-      return Lettre(get_lettre(rat));
+      print_rationnel(rat);      
+      ajouter_element(e,(intptr_t)get_position_min(rat));
       break;
-    }
- }*/
+      
+    case UNION:
+      trouver_premier(e,fils_gauche(rat));
+      trouver_premier(e,fils_droit(rat));
+      break;
 
-Ensemble *premier(Rationnel *rat)  //TODO
+    case CONCAT:
+      if(contient_mot_vide(fils_gauche(rat)))
+	{
+	  printf("contient pas le mot vide\n");
+	  trouver_premier(e,fils_droit(rat));
+	}	    
+      trouver_premier(e,fils_gauche(rat));
+      break;
+      
+    case STAR:
+      trouver_premier(e,fils(rat));
+      break;    
+    }  
+}
+
+Ensemble *premier(Rationnel *rat)
 {
-  /*Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  Ensemble * e = creer_ensemble(NULL,NULL,NULL);
   trouver_premier(e, rat);
-  return e;*/
-  return NULL;
+  return e;
 }
 
 Ensemble *dernier(Rationnel *rat)
