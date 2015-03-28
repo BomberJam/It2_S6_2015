@@ -314,10 +314,11 @@ void numeroter_rationnel(Rationnel *rat)
 
 bool contient_mot_vide(Rationnel *rat)
 {
+    if(!rat)
+    return false;
+ 
     if(get_etiquette(rat) == EPSILON || get_etiquette(rat) == STAR)
-    {
       return true;
-    }
     
     if(fils_gauche (rat) != NULL)  
       if(fils_droit (rat) != NULL)
@@ -345,9 +346,8 @@ void trouver_premier(Ensemble * e, Rationnel * rat){
 
     case CONCAT:
       if(contient_mot_vide(fils_gauche(rat)))
-	{
 	  trouver_premier(e,fils_droit(rat));
-	}	    
+	    
       trouver_premier(e,fils_gauche(rat));
       break;
       
@@ -385,9 +385,8 @@ void trouver_dernier(Ensemble * e, Rationnel * rat){
 
     case CONCAT:
       if(contient_mot_vide(fils_droit(rat)))
-	{
 	  trouver_dernier(e,fils_gauche(rat));
-	}	    
+	    
       trouver_dernier(e,fils_droit(rat));
       break;
       
@@ -404,9 +403,34 @@ Ensemble *dernier(Rationnel *rat)
   return e;
 }
 
+void trouver_suivant(Ensemble * e, Rationnel * rat, int positon){
+  if(!rat)
+    return;
+  
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+      break;
+      
+    case LETTRE:     
+      break;
+      
+    case UNION:
+      break;
+
+    case CONCAT:
+      break;
+      
+    case STAR:
+      break;    
+    }  
+}
+
 Ensemble *suivant(Rationnel *rat, int position)
 {
-   A_FAIRE_RETURN(NULL);
+  Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  trouver_suivant(e, rat, position);
+  return e; 
 }
 
 Automate *Glushkov(Rationnel *rat)
