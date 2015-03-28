@@ -108,51 +108,43 @@ char get_lettre(Rationnel* rat)
 
 int get_position_min(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
    return rat->position_min;
 }
 
 int get_position_max(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
    return rat->position_max;
 }
 
 void set_position_min(Rationnel* rat, int valeur)
 {
-   assert (get_etiquette(rat) == LETTRE);
    rat->position_min = valeur;
    return;
 }
 
 void set_position_max(Rationnel* rat, int valeur)
 {
-   assert (get_etiquette(rat) == LETTRE);
    rat->position_max = valeur;
    return;
 }
 
 Rationnel *fils_gauche(Rationnel* rat)
 {
-   assert((get_etiquette(rat) == CONCAT) || (get_etiquette(rat) == UNION));
    return rat->gauche;
 }
 
 Rationnel *fils_droit(Rationnel* rat)
 {
-   assert((get_etiquette(rat) == CONCAT) || (get_etiquette(rat) == UNION));
    return rat->droit;
 }
 
 Rationnel *fils(Rationnel* rat)
 {
-   assert(get_etiquette(rat) == STAR);
    return rat->gauche;
 }
 
 Rationnel *pere(Rationnel* rat)
 {
-   assert(!est_racine(rat));
    return rat->pere;
 }
 
@@ -279,29 +271,166 @@ int rationnel_to_dot_aux(Rationnel *rat, FILE *output, int pere, int noeud_coura
    return noeud_courant;
 }
 
+Rationnel* numerotation_rationnel(Rationnel* rat, int valeur){
+  
+  if(get_etiquette(rat) == LETTRE)
+    {
+      set_position_min (rat, ++valeur );
+      set_position_max (rat,valeur);
+      return rat;
+    }
+
+  if(fils_gauche (rat) != NULL)
+    {
+      if(get_etiquette(rat) == STAR)
+	{
+	  Rationnel* minmax = numerotation_rationnel(fils(rat),valeur);      
+	  set_position_min (rat, get_position_min(minmax));
+	  set_position_max (rat, get_position_max(minmax));
+	  valeur = get_position_max(minmax);
+	}
+      else
+	{
+	  Rationnel* rat_min = numerotation_rationnel(fils_gauche(rat), valeur);
+	  set_position_min(rat,get_position_min(rat_min));
+	  valeur = get_position_max(rat_min);
+	}
+    }
+
+  if(fils_droit (rat) != NULL)
+    {
+      Rationnel* rat_max = numerotation_rationnel(fils_droit(rat), valeur);
+      set_position_max(rat,get_position_max(rat_max));
+      valeur = get_position_max(rat_max);
+    }
+
+  return rat;
+}
+
 void numeroter_rationnel(Rationnel *rat)
-{
-   A_FAIRE;
+{  
+  numerotation_rationnel(rat,0);
 }
 
 bool contient_mot_vide(Rationnel *rat)
 {
-   A_FAIRE_RETURN(true);
+    if(!rat)
+    return false;
+ 
+    if(get_etiquette(rat) == EPSILON || get_etiquette(rat) == STAR)
+      return true;
+    
+    if(fils_gauche (rat) != NULL)  
+      if(fils_droit (rat) != NULL)
+	return contient_mot_vide(fils_gauche(rat)) || contient_mot_vide(fils_droit(rat));
+    
+    return false;
+}
+
+void trouver_premier(Ensemble * e, Rationnel * rat){
+  if(!rat)
+    return;  
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+      break;
+      
+    case LETTRE:     
+      ajouter_element(e,(intptr_t)get_position_min(rat));
+      break;
+      
+    case UNION:
+      trouver_premier(e,fils_gauche(rat));
+      trouver_premier(e,fils_droit(rat));
+      break;
+
+    case CONCAT:
+      if(contient_mot_vide(fils_gauche(rat)))
+	  trouver_premier(e,fils_droit(rat));
+	    
+      trouver_premier(e,fils_gauche(rat));
+      break;
+      
+    case STAR:
+      trouver_premier(e,fils(rat));
+      break;    
+    }  
 }
 
 Ensemble *premier(Rationnel *rat)
 {
-   A_FAIRE_RETURN(NULL);
+  Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  trouver_premier(e, rat);
+  return e;
+}
+
+
+void trouver_dernier(Ensemble * e, Rationnel * rat){
+  if(!rat)
+    return;
+  
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+      break;
+      
+    case LETTRE:     
+      ajouter_element(e,(intptr_t)get_position_min(rat));
+      break;
+      
+    case UNION:
+      trouver_dernier(e,fils_droit(rat));
+      trouver_dernier(e,fils_gauche(rat));
+      break;
+
+    case CONCAT:
+      if(contient_mot_vide(fils_droit(rat)))
+	  trouver_dernier(e,fils_gauche(rat));
+	    
+      trouver_dernier(e,fils_droit(rat));
+      break;
+      
+    case STAR:
+      trouver_dernier(e,fils(rat));
+      break;    
+    }  
 }
 
 Ensemble *dernier(Rationnel *rat)
 {
-   A_FAIRE_RETURN(NULL);
+   Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  trouver_dernier(e, rat);
+  return e;
+}
+
+void trouver_suivant(Ensemble * e, Rationnel * rat, int positon){
+  if(!rat)
+    return;
+  
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+      break;
+      
+    case LETTRE:     
+      break;
+      
+    case UNION:
+      break;
+
+    case CONCAT:
+      break;
+      
+    case STAR:
+      break;    
+    }  
 }
 
 Ensemble *suivant(Rationnel *rat, int position)
 {
-   A_FAIRE_RETURN(NULL);
+  Ensemble * e = creer_ensemble(NULL,NULL,NULL);
+  trouver_suivant(e, rat, position);
+  return e; 
 }
 
 Automate *Glushkov(Rationnel *rat)
@@ -311,7 +440,22 @@ Automate *Glushkov(Rationnel *rat)
 
 bool meme_langage (const char *expr1, const char* expr2)
 {
-   A_FAIRE_RETURN(true);
+  /*Rationnel *rat1 = expression_to_rationnel(expr1);
+  numeroter_rationnel(rat1);
+  Automate *auto1 = Glushkov(rat1);
+  Automate *auto_deter1 = creer_automate_deterministe(auto1);
+  Automate *auto_mini1 =  creer_automate_minimal(auto_deter1);
+  rat1 = Arden(auto_mini1);
+
+  Rationnel *rat2 = expression_to_rationnel(expr2);
+  numeroter_rationnel(rat2);
+  Automate *auto2 = Glushkov(rat2);
+  Automate *auto_deter2 = creer_automate_deterministe(auto2);
+  Automate *auto_mini2 =  creer_automate_minimal(auto_deter2);
+  rat2 = Arden(auto_mini2);
+  
+  return(rat1 == rat2); // il existe surement une fonction qui pour comparer 2 rat*/
+  return false;
 }
 
 Systeme systeme(Automate *automate)
