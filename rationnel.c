@@ -403,25 +403,39 @@ Ensemble *dernier(Rationnel *rat)
   return e;
 }
 
-void trouver_suivant(Ensemble * e, Rationnel * rat, int positon){
+void trouver_suivant(Ensemble * e, Rationnel * rat, int position){
   if(!rat)
     return;
-  
+  Ensemble* last;
   switch(get_etiquette(rat))
     {
     case EPSILON:
       break;
       
-    case LETTRE:     
+    case LETTRE:    
       break;
       
     case UNION:
+      
+      trouver_suivant(e, fils_gauche(rat), position);
+      trouver_suivant(e, fils_droit(rat), position);
       break;
 
     case CONCAT:
+      trouver_suivant(e, fils_gauche(rat), position);
+      trouver_suivant(e, fils_droit(rat), position);
+	
+      last =  dernier(fils_gauche(rat));
+      if(est_dans_l_ensemble(last, (intptr_t)position))
+	ajouter_element(e,(intptr_t)(premier(fils_droit(rat))));	   
       break;
       
     case STAR:
+      last = dernier(fils(rat));
+	 if(est_dans_l_ensemble(last, (intptr_t)position)))
+	   ajouter_element(e,(intptr_t)(premier(fils(rat))));
+
+	 trouver_suivant(e, fils(rat), position);
       break;    
     }  
 }
