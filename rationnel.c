@@ -432,7 +432,7 @@ void trouver_suivant(Ensemble * e, Rationnel * rat, int position){
       
     case STAR:
       last = dernier(fils(rat));
-	 if(est_dans_l_ensemble(last, (intptr_t)position)))
+      if(est_dans_l_ensemble(last, (intptr_t)position))
 	   ajouter_element(e,(intptr_t)(premier(fils(rat))));
 
 	 trouver_suivant(e, fils(rat), position);
