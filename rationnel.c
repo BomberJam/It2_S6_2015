@@ -403,10 +403,12 @@ Ensemble *dernier(Rationnel *rat)
   return e;
 }
 
-void trouver_suivant(Ensemble * e, Rationnel * rat, int position){
+Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
   if(!rat)
-    return;
+    return NULL;
   Ensemble* last;
+  Ensemble* first;
+
   switch(get_etiquette(rat))
     {
     case EPSILON:
@@ -417,33 +419,48 @@ void trouver_suivant(Ensemble * e, Rationnel * rat, int position){
       
     case UNION:
       
-      trouver_suivant(e, fils_gauche(rat), position);
-      trouver_suivant(e, fils_droit(rat), position);
+      e = trouver_suivant(e, fils_gauche(rat), position);
+      e = trouver_suivant(e, fils_droit(rat), position);   
       break;
 
     case CONCAT:
-      trouver_suivant(e, fils_gauche(rat), position);
-      trouver_suivant(e, fils_droit(rat), position);
-	
-      last =  dernier(fils_gauche(rat));
-      if(est_dans_l_ensemble(last, (intptr_t)position))
-	ajouter_element(e,(intptr_t)(premier(fils_droit(rat))));	   
+ 
+      last =  dernier(fils_gauche(rat));    
+      if(est_dans_l_ensemble(last, (intptr_t)position))  //si la lettre est la derniere du membre gauche
+	{
+	  first = premier(fils_droit(rat));	  //on crée un ensemble des premiers du membre droit
+	  e =  creer_union_ensemble(e, first); //on fait l'union des deux ensembles
+	}
+      
+      e = trouver_suivant(e, fils_gauche(rat), position);
+      e = trouver_suivant(e, fils_droit(rat), position);
       break;
       
     case STAR:
-      last = dernier(fils(rat));
-      if(est_dans_l_ensemble(last, (intptr_t)position))
-	   ajouter_element(e,(intptr_t)(premier(fils(rat))));
 
-	 trouver_suivant(e, fils(rat), position);
+      last = dernier(fils(rat));
+      
+      printf("dernier");
+      print_ensemble(last, NULL);
+      
+      if(est_dans_l_ensemble(last, (intptr_t)position))
+	{
+	  first = premier(fils(rat));
+
+	  e =  creer_union_ensemble(e, first);
+	}      
+      e = trouver_suivant(e, fils(rat), position);
       break;    
-    }  
+    }
+  return e;
 }
 
 Ensemble *suivant(Rationnel *rat, int position)
 {
   Ensemble * e = creer_ensemble(NULL,NULL,NULL);
-  trouver_suivant(e, rat, position);
+  e = trouver_suivant(e, rat, position);
+  printf("\ntaille suivant -> %d",taille_ensemble(e));
+  print_ensemble(e, NULL);
   return e; 
 }
 
