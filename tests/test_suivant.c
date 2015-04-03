@@ -28,19 +28,32 @@
 
 int test_suivant(){
 	int result = 1;
-    {
-       Rationnel * rat;
-       rat = expression_to_rationnel("a.b");
-       numeroter_rationnel(rat);
-       Ensemble * e = suivant(rat,1);
+	{
+	  Rationnel * rat;
+	  rat = expression_to_rationnel("a.b");
+	  numeroter_rationnel(rat);
+	  Ensemble * e = suivant(rat,1);
        
-       TEST(
-          1
-          && ! est_dans_l_ensemble(e, 1)
-          && est_dans_l_ensemble(e, 2)
-          , result);
-    }
-
+	  TEST(
+	       1
+	       && ! est_dans_l_ensemble(e, 1)
+	       && est_dans_l_ensemble(e, 2)
+	       , result);
+	}
+	
+	{
+	  Rationnel * rat;
+	  rat = expression_to_rationnel("(a.b)*");
+	  numeroter_rationnel(rat);
+	  Ensemble * e = suivant(rat,1);
+       
+	  TEST(
+	       1
+	       && ! est_dans_l_ensemble(e, 1)
+	       && est_dans_l_ensemble(e, 2)
+	       , result);
+	}
+     
     {
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b*.c)");
@@ -55,7 +68,7 @@ int test_suivant(){
           && est_dans_l_ensemble(e, 4)
           , result);
     }
-
+    
     {
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");

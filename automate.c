@@ -656,11 +656,13 @@ void inverser_transition(int origine, char lettre, int fin, void* automate)
 
 Automate *miroir( const Automate * automate)
 {
-  /*Fonction en construction*/
-  Automate * nouvel_automate = creer_automate();
+
+  Automate * nouvel_automate = creer_automate();//on part d'un nouvel automate
   pour_tout_element(automate -> initiaux, inverser_initiaux_vers_finaux, ((Automate*) nouvel_automate));
   pour_tout_element(automate -> finaux, inverser_finaux_vers_initiaux, ((Automate*) nouvel_automate));
+  //on échange le statut des états initiaux et finaux
   pour_toute_transition(automate, inverser_transition, ((Automate*) nouvel_automate));
+  //on inverse le sens des transitions
 
   return nouvel_automate;
 }
@@ -843,7 +845,7 @@ Automate * creer_automate_deterministe( const Automate* automate ){
 }
 
 Automate * creer_automate_minimal( const Automate* automate ){
-  //modéle de Brzozowski
+  //modéle de Brzozowski : on effectue le miroir d'un automate puis sa déterminisation deux fois de suite.
   Automate* tmp_automate = miroir(automate);
   tmp_automate = creer_automate_deterministe(tmp_automate);
   tmp_automate = miroir(tmp_automate);

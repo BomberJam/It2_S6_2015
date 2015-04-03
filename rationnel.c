@@ -426,7 +426,7 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
     case CONCAT:
  
       last =  dernier(fils_gauche(rat));    
-      if(est_dans_l_ensemble(last, (intptr_t)position))  //si la lettre est la derniere du membre gauche
+      if(est_dans_l_ensemble(last, (intptr_t)position))  //si la position est dans les derniers du membre gauche
 	{
 	  first = premier(fils_droit(rat));	  //on crée un ensemble des premiers du membre droit
 	  e =  creer_union_ensemble(e, first); //on fait l'union des deux ensembles
@@ -440,10 +440,7 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
 
       last = dernier(fils(rat));
       
-      printf("dernier");
-      print_ensemble(last, NULL);
-      
-      if(est_dans_l_ensemble(last, (intptr_t)position))
+      if(est_dans_l_ensemble(last, (intptr_t)position)) 
 	{
 	  first = premier(fils(rat));
 
@@ -459,8 +456,6 @@ Ensemble *suivant(Rationnel *rat, int position)
 {
   Ensemble * e = creer_ensemble(NULL,NULL,NULL);
   e = trouver_suivant(e, rat, position);
-  printf("\ntaille suivant -> %d",taille_ensemble(e));
-  print_ensemble(e, NULL);
   return e; 
 }
 
