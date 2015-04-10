@@ -464,24 +464,70 @@ Automate *Glushkov(Rationnel *rat)
    A_FAIRE_RETURN(NULL);
 }
 
+void ajouter_finaux(const intptr_t elem, void* automate)
+{
+  ajouter_etat_final(((Automate*) automate), elem);
+}
+
+void ajouter_initiaux(const intptr_t elem, void* automate)
+{
+  ajouter_etat_initial(((Automate*) automate), elem);
+}
+
+void ajouter_etats(const intptr_t elem, void* automate)
+{
+  ajouter_etat(((Automate*) automate), elem);
+}
+
+void ajouter_transitions(int origine, char lettre, int fin, void* automate)
+{
+  ajouter_transition(((Automate*)automate), origine, lettre, fin);
+}
+
+Automate* creer_automate_complementaire(const Automate *automate)
+{
+  Automate * nouvel_automate = creer_automate();
+  Ensemble * f = creer_difference_ensemble(automate -> etats, automate -> finaux);
+  
+  pour_tout_element(f, ajouter_finaux, ((Automate*) nouvel_automate));
+  pour_tout_element(automate -> initiaux, ajouter_initiaux, ((Automate*) nouvel_automate));
+  pour_tout_element(automate -> finaux, ajouter_etats, ((Automate*) nouvel_automate));
+  
+  pour_toute_transition(automate, ajouter_transitions, ((Automate*) nouvel_automate));
+  
+  return nouvel_automate;
+}
+
 bool meme_langage (const char *expr1, const char* expr2)
 {
-  /*Rationnel *rat1 = expression_to_rationnel(expr1);
-  numeroter_rationnel(rat1);
-  Automate *auto1 = Glushkov(rat1);
-  Automate *auto_deter1 = creer_automate_deterministe(auto1);
-  Automate *auto_mini1 =  creer_automate_minimal(auto_deter1);
-  rat1 = Arden(auto_mini1);
-
+  Rationnel *rat1 = expression_to_rationnel(expr1);  
   Rationnel *rat2 = expression_to_rationnel(expr2);
-  numeroter_rationnel(rat2);
-  Automate *auto2 = Glushkov(rat2);
-  Automate *auto_deter2 = creer_automate_deterministe(auto2);
-  Automate *auto_mini2 =  creer_automate_minimal(auto_deter2);
-  rat2 = Arden(auto_mini2);
   
-  return(rat1 == rat2); // il existe surement une fonction qui pour comparer 2 rat*/
-  return false;
+  numeroter_rationnel(rat1);  
+  numeroter_rationnel(rat2);
+ 
+  Automate *auto1 = Glushkov(rat1);  
+  Automate *auto2 = Glushkov(rat2);
+  
+  Automate *auto_deter1 = creer_automate_deterministe(auto1);  
+  Automate *auto_deter2 = creer_automate_deterministe(auto2);
+  
+  Automate *auto_mini1 =  creer_automate_minimal(auto_deter1);  
+  Automate *auto_mini2 =  creer_automate_minimal(auto_deter2);
+  
+  Automate *auto_comp1 = creer_automate_complementaire(auto_mini1);  
+  Automate *auto_comp2 = creer_automate_complementaire(auto_mini2);
+
+  Automate *intersection_automate = creer_intersection_des_automates(auto_comp1, auto_comp2);
+
+  //on utilise directement etats_accessibles, car on a fait glushkov précédemment, il n'y a qu'un état initial.
+  Ensemble * access = etats_accessibles( intersection_automate,0);
+  
+  print_ensemble(access, NULL );
+  
+  if(comparer_ensemble(access,intersection_automate->finaux) == 0)
+    return false;
+  return true;
 }
 
 Systeme systeme(Automate *automate)
