@@ -43,6 +43,19 @@ int test_suivant(){
 	
 	{
 	  Rationnel * rat;
+	  rat = expression_to_rationnel("(a+b)*");
+	  numeroter_rationnel(rat);
+	  Ensemble * e = suivant(rat,2);
+       
+	  TEST(
+	       1
+	       && est_dans_l_ensemble(e, 1)
+	       && est_dans_l_ensemble(e, 2)
+	       , result);
+	}
+		
+	{
+	  Rationnel * rat;
 	  rat = expression_to_rationnel("(a.b)*");
 	  numeroter_rationnel(rat);
 	  Ensemble * e = suivant(rat,1);
