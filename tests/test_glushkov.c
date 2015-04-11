@@ -45,7 +45,7 @@ int test_glushkov(){
           && ! le_mot_est_reconnu(automate, "ba")
           , result);
     }
-    /*	
+    	
     {
        Rationnel * rat;
        rat = expression_to_rationnel("(a.a)*.(b*.c)*");
@@ -81,7 +81,7 @@ int test_glushkov(){
           && le_mot_est_reconnu(automate, "aaaaccabbb")
           && ! le_mot_est_reconnu(automate, "aaaabccaabbb")
           , result);
-	  }*/
+	  }
     return result;
 }
 
