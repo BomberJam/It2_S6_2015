@@ -512,16 +512,19 @@ Glushkov(Rationnel *rat)
       ajouter_etat_final(result, 0);
     }
 
-  for (ensPremier = premier(rat), ensIt = premier_iterateur_ensemble(ensPremier);
+  ensPremier = premier(rat);
+  for (ensIt = premier_iterateur_ensemble(ensPremier);
        !iterateur_est_vide(ensIt);
        ensIt = iterateur_suivant_ensemble(ensIt))
     {
       ajouter_etat(result, get_element(ensIt));
       ajouter_transition(result, 0, get_lettre(trouver_rationnel(rat, get_element(ensIt))), get_element(ensIt));
     }
-
+  liberer_ensemble(ensPremier);
+  
   for (int i = 0; i <= get_position_max(rat); ++i)
     {
+      ensSuivant = suivant(rat, i);
       for (ensIt = premier_iterateur_ensemble(ensSuivant);
 	   !iterateur_est_vide(ensIt);
 	   ensIt = iterateur_suivant_ensemble(ensIt))
@@ -532,14 +535,13 @@ Glushkov(Rationnel *rat)
       liberer_ensemble(ensSuivant);
     }
 
+  ensDernier = dernier(rat);
   for (ensIt = premier_iterateur_ensemble(ensDernier);
        !iterateur_est_vide(ensIt);
        ensIt = iterateur_suivant_ensemble(ensIt))
     {
       ajouter_etat_final(result, get_element(ensIt));
     }
-
-  liberer_ensemble(ensPremier);
   liberer_ensemble(ensDernier);
 
   return result;
