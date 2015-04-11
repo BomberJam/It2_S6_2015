@@ -464,9 +464,85 @@ Ensemble *suivant(Rationnel *rat, int position)
   return e; 
 }
 
-Automate *Glushkov(Rationnel *rat)
+static Rationnel*
+trouver_rationnel(Rationnel *rat, int position)
 {
-   A_FAIRE_RETURN(NULL);
+  Rationnel *result;
+
+  if (fils_droit(rat))
+    {
+      result = trouver_rationnel(fils_droit(rat), position);
+
+      if (result)
+	{
+	  return result;
+	}
+    }
+
+  if (fils_gauche(rat))
+    {
+      result = trouver_rationnel(fils_gauche(rat), position);
+
+      if (result)
+	{
+	  return result;
+	}
+    }
+
+  if (get_etiquette(rat) == LETTRE && get_position_min(rat) == position)
+    {
+      return rat;
+    }
+
+  return NULL;
+}
+
+Automate*
+Glushkov(Rationnel *rat)
+{
+  Automate *result = NULL;
+  Ensemble *ensPremier = NULL, *ensSuivant = NULL, *ensDernier = NULL;
+  Ensemble_iterateur ensIt;
+
+  result = creer_automate();
+  ajouter_etat_initial(result, 0);
+
+  if (contient_mot_vide(rat))
+    {
+      ajouter_etat_final(result, 0);
+    }
+
+  for (ensPremier = premier(rat), ensIt = premier_iterateur_ensemble(ensPremier);
+       !iterateur_est_vide(ensIt);
+       ensIt = iterateur_suivant_ensemble(ensIt))
+    {
+      ajouter_etat(result, get_element(ensIt));
+      ajouter_transition(result, 0, get_lettre(trouver_rationnel(rat, get_element(ensIt))), get_element(ensIt));
+    }
+
+  for (int i = 0; i <= get_position_max(rat); ++i)
+    {
+      for (ensIt = premier_iterateur_ensemble(ensSuivant);
+	   !iterateur_est_vide(ensIt);
+	   ensIt = iterateur_suivant_ensemble(ensIt))
+	{
+	  ajouter_etat(result, i);
+	  ajouter_transition(result, i, get_lettre(trouver_rationnel(rat, get_element(ensIt))), get_element(ensIt));
+	}
+      liberer_ensemble(ensSuivant);
+    }
+
+  for (ensIt = premier_iterateur_ensemble(ensDernier);
+       !iterateur_est_vide(ensIt);
+       ensIt = iterateur_suivant_ensemble(ensIt))
+    {
+      ajouter_etat_final(result, get_element(ensIt));
+    }
+
+  liberer_ensemble(ensPremier);
+  liberer_ensemble(ensDernier);
+
+  return result;
 }
 
 bool meme_langage (const char *expr1, const char* expr2)
