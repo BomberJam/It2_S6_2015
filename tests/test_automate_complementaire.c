@@ -28,13 +28,61 @@ int test_automate_complementaire(){
 	 && le_mot_est_reconnu( comp, "ab" )
 	 && le_mot_est_reconnu( comp, "abb" )
 	 && ! le_mot_est_reconnu( comp, "abba" )
+	 , result
+	 );
+    liberer_automate( automate );
+    liberer_automate( comp );
+  }
+  
+  {
+    Automate * automate = creer_automate();
 
+    ajouter_transition( automate, 0, 'a', 0 );
+    ajouter_transition( automate, 0, 'b', 0 );
+    ajouter_etat_initial( automate, 0);
+    ajouter_etat_final( automate, 0);
+
+    Automate * comp = creer_automate_complementaire( automate );
+
+    TEST(
+	 1
+	 && comp
+	 && ! le_mot_est_reconnu( comp, "" )
+	 && ! le_mot_est_reconnu( comp, "a" )
+	 && ! le_mot_est_reconnu( comp, "ab" )
 	 , result
 	 );
     liberer_automate( automate );
     liberer_automate( comp );
   }
 
+  {
+    Automate * automate = creer_automate();
+
+    ajouter_transition( automate, 0, 'a', 1 );
+    ajouter_transition( automate, 1, 'b', 1 );
+    ajouter_transition( automate, 1, 'a', 0 );
+    ajouter_transition( automate, 0, 'b', 2 );
+    ajouter_transition( automate, 2, 'a', 0 );
+    ajouter_transition( automate, 2, 'b', 0 );
+    ajouter_etat_initial( automate, 0);
+    ajouter_etat_final( automate, 0);
+    
+    Automate * comp = creer_automate_complementaire( automate );
+
+    TEST(
+	 1
+	 && comp
+	 && ! le_mot_est_reconnu( comp, "" )
+	 && ! le_mot_est_reconnu( comp, "abba" )
+	 && ! le_mot_est_reconnu( comp, "aba" )
+	 && le_mot_est_reconnu( comp, "a" )
+	 && le_mot_est_reconnu( comp, "ab" )
+	 , result
+	 );
+    liberer_automate( automate );
+    liberer_automate( comp );
+  }
   return result;
 }
 

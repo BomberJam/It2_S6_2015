@@ -583,34 +583,28 @@ Automate* creer_automate_complementaire(const Automate *automate)
 
 bool meme_langage (const char *expr1, const char* expr2)
 {
-  Rationnel *rat1 = expression_to_rationnel(expr1);  
+  Rationnel *rat1 = expression_to_rationnel(expr1);
   Rationnel *rat2 = expression_to_rationnel(expr2);
-  
-  numeroter_rationnel(rat1);  
+  numeroter_rationnel(rat1);
   numeroter_rationnel(rat2);
- 
-  Automate *auto1 = Glushkov(rat1);  
-  Automate *auto2 = Glushkov(rat2);
   
-  Automate *auto_deter1 = creer_automate_deterministe(auto1);  
-  Automate *auto_deter2 = creer_automate_deterministe(auto2);
+  Automate *min1 = creer_automate_minimal(Glushkov(rat1));
+  Automate *min2 = creer_automate_minimal(Glushkov(rat2));
+  printf("\n MIN ->");print_automate(min1);printf("\n");print_automate(min2);
   
-  Automate *auto_mini1 =  creer_automate_minimal(auto_deter1);  
-  Automate *auto_mini2 =  creer_automate_minimal(auto_deter2);
-  
-  Automate *auto_comp1 = creer_automate_complementaire(auto_mini1);  
-  Automate *auto_comp2 = creer_automate_complementaire(auto_mini2);
+  Automate *a1=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min1),min2));
+  //Automate *a2=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min2),min1));
+  printf("\n COMP ->");print_automate(a1);//print_automate(a2);
 
-  Automate *intersection_automate = creer_intersection_des_automates(auto_comp1, auto_comp2);
-
-  //on utilise directement etats_accessibles, car on a fait glushkov précédemment, il n'y a qu'un état initial.
-  Ensemble * access = etats_accessibles( intersection_automate,0);
+  printf("TAILLE %d",taille_ensemble(a1->finaux));
   
-  print_ensemble(access, NULL );
+  if(taille_ensemble(a1->finaux) == 0)
+    {
+      printf("SAME");
+      return true;
+    }
   
-  if(comparer_ensemble(access,intersection_automate->finaux) == 0)
-    return false;
-  return true;
+  return false; 
 }
 
 Systeme systeme(Automate *automate)
