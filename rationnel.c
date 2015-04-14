@@ -590,20 +590,19 @@ bool meme_langage (const char *expr1, const char* expr2)
   
   Automate *min1 = creer_automate_minimal(Glushkov(rat1));
   Automate *min2 = creer_automate_minimal(Glushkov(rat2));
-  printf("\n MIN ->");print_automate(min1);printf("\n");print_automate(min2);
-  
-  Automate *a1=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min1),min2));
-  //Automate *a2=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min2),min1));
-  printf("\n COMP ->");print_automate(a1);//print_automate(a2);
 
-  printf("TAILLE %d",taille_ensemble(a1->finaux));
-  
-  if(taille_ensemble(a1->finaux) == 0)
+  Automate *a1=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min1),min2));
+  Automate *a2=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min2),min1));
+
+  //L1 est inclus ou égal à L2 ssi  intersection(L1, complémentaire(L2)) = ensemble vide
+  //L1 est inclus ou égal à L2 ssi  intersection(L2, complémentaire(L1)) = ensemble vide
+  //Dans un automate, on obtient un tel résultat quand il n'y a pas d'état final.
+  //On vérifie donc si l'ensemble des états finaux de a1 et a2 est vide ou non.
+  //Si oui, a1 et a2 reconnaissent le même langage.
+  if((taille_ensemble(a1->finaux) == 0) && (taille_ensemble(a2->finaux) == 0))
     {
-      printf("SAME");
       return true;
-    }
-  
+    } 
   return false; 
 }
 
