@@ -608,7 +608,26 @@ bool meme_langage (const char *expr1, const char* expr2)
 
 Systeme systeme(Automate *automate)
 {
-   A_FAIRE_RETURN(NULL);
+  Automate *minimal = creer_automate_minimal(automate);
+  
+  int nb_colonnes = taille_ensemble(get_etats(automate));
+  int nb_lignes = size_colonne+1;
+  
+  Systeme tab = malloc(sizeof(Rationnel**)*nb_lignes);
+  for(int i = 0; i < nb_lignes; i++)
+    {
+      
+      tab[i] = malloc(sizeof(Rationnel*)*nb_colonnes);
+      for(int j = 0; j < nb_colonnes; j++)
+	{ 
+	  tab[i][j] = NULL;
+	}
+      
+      //si l'etat est final, on place EPSILON en tab[i][nb_colonnes-1]
+  //Utilise pour toute_transition pour le reste. Tu devras creer une fonction remplir_systeme je pense. Pense à gérer le cas où deux lettres bouclent sur le mm état (X0 = (a+b)X0 par exemple.
+    }
+  
+  return NULL; //return tab.
 }
 
 void print_ligne(Rationnel **ligne, int n)
@@ -638,7 +657,7 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
 
 Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **valeur_variable, int n)
 {
-   A_FAIRE_RETURN(NULL);
+  A_FAIRE_RETURN(NULL);
 }
 
 Systeme resoudre_systeme(Systeme systeme, int n)
@@ -648,6 +667,6 @@ Systeme resoudre_systeme(Systeme systeme, int n)
 
 Rationnel *Arden(Automate *automate)
 {
-   A_FAIRE_RETURN(NULL);
+  A_FAIRE_RETURN(NULL);
 }
 
