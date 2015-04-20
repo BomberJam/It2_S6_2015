@@ -610,8 +610,8 @@ Systeme systeme(Automate *automate)
 {
   Automate *minimal = creer_automate_minimal(automate);
   
-  int nb_colonnes = taille_ensemble(get_etats(automate));
-  int nb_lignes = size_colonne+1;
+  int nb_colonnes = taille_ensemble(get_etats(minimal));
+  int nb_lignes = nb_colonnes+1;
   
   Systeme tab = malloc(sizeof(Rationnel**)*nb_lignes);
   for(int i = 0; i < nb_lignes; i++)

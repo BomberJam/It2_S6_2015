@@ -17,8 +17,7 @@ int test_systeme()
     TEST(
 	 1
 	 && tab[0][2] == EPSILON
-	 && tab[0][0] == "a+b"
-	 && ! (tab[0][2] == 'a')
+	 && ! (tab[0][2] == rationnel(LETTRE, 'a', 0, 0, NULL, NULL, NULL, NULL);)
 	 , result);
   }
   
