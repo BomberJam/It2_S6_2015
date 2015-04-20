@@ -8,17 +8,17 @@
 int test_systeme()
 {
   int result = 1;
-  
   {
     Rationnel * rat;
     rat = expression_to_rationnel("(a+b)*");
     Automate * a = Glushkov(rat);
     Systeme tab = systeme(a);
+    
     TEST(
 	 1
 	 && tab[0][2] == EPSILON
-	 && tab[0][0] == Union(Lettre('a'),Lettre('b'));
-	 && ! (tab[0][2] == Lettre('a');
+	 && tab[0][0] == Union(Lettre('a'),Lettre('b'))
+	 && ! (tab[0][2] == Lettre('a'))
 	 , result);
   }
   
