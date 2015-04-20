@@ -17,7 +17,8 @@ int test_systeme()
     TEST(
 	 1
 	 && tab[0][2] == EPSILON
-	 && ! (tab[0][2] == rationnel(LETTRE, 'a', 0, 0, NULL, NULL, NULL, NULL);)
+	 && tab[0][0] == Union(Lettre('a'),Lettre('b'));
+	 && ! (tab[0][2] == Lettre('a');
 	 , result);
   }
   
