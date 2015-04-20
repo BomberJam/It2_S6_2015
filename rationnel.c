@@ -652,8 +652,29 @@ void print_systeme(Systeme systeme, int n)
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {
-   A_FAIRE_RETURN(NULL);
+  if(contient_mot_vide(ligne[numero_variable]))//X = UX + V où U n'est pas effaçable.
+    return NULL;
+  else
+    {      
+      for(int i = 0; i < n; i++) //on parcourt les différents membres de la ligne.
+	{
+	  if(ligne[i] != NULL) //Inutile de traiter les transitions inexistantes 
+	    {  
+	      if(ligne[i] == Epsilon()) //dans le cas où V=epsilon -> U*
+		{		
+		  ligne[i] = Star(ligne[numero_variable]);
+		}
+	      else //U*V
+		{
+		  ligne[i] = Concat(Star(ligne[numero_variable]), ligne[i]);
+		}	    
+	    }
+	}
+    } 
+  ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
+  return ligne;
 }
+  
 
 Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **valeur_variable, int n)
 {
