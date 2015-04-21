@@ -530,17 +530,52 @@ bool meme_langage (const char *expr1, const char* expr2)
   return true;
 }
 
-Systeme systeme(Automate *automate)
+void
+remplir_systeme(int origine, char lettre, int fin, void *data)
 {
-   A_FAIRE_RETURN(NULL);
+  if (data[origine][fin])
+    {
+      data[origine][fin] = Union(data[origine][fin], Lettre(lettre));
+    }
+  else
+    {
+      data[origine][fin] = Lettre(lettre);
+    }
+}
+
+Systeme
+systeme(Automate *automate)
+{
+  int colonnes = taille_ensemble(get_etats(automate));
+  int lignes = colonnes + 1;
+
+  Systeme tab = malloc(sizeof(*tab) * lignes);
+
+  for (int i = 0; i < lignes; i++)
+    {
+      tab[i] = malloc(sizeof(Rationnel*) * colonnes);
+      
+      for (int j = 0; j < colonnes; j++)
+	{
+	  tab[i][j] = NULL;
+	}
+      
+      if (est_un_etat_final_de_l_automate(automate, i))
+	{
+	  tab[i][colonnes - 1] = Epsilon();
+	}
+    }
+  pour_toute_transition(minimal, remplir_systeme, tab);
+  
+  return tab;
 }
 
 void print_ligne(Rationnel **ligne, int n)
 {
-   for (int j = 0; j <=n; j++)
+   for (int j = 0; j <= n; j++)
       {
          print_rationnel(ligne[j]);
-         if (j<n)
+         if (j < n)
             printf("X%d\t+\t", j);
       }
    printf("\n");
