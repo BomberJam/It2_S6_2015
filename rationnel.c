@@ -533,13 +533,13 @@ bool meme_langage (const char *expr1, const char* expr2)
 void
 remplir_systeme(int origine, char lettre, int fin, void *data)
 {
-  if ((Systeme)data[origine][fin])
+  if (((Systeme)data)[origine][fin])
     {
-      (Systeme)data[origine][fin] = Union((Systeme)data[origine][fin], Lettre(lettre));
+      ((Systeme)data)[origine][fin] = Union(((Systeme)data)[origine][fin], Lettre(lettre));
     }
   else
     {
-      (Systeme)data[origine][fin] = Lettre(lettre);
+      ((Systeme)data)[origine][fin] = Lettre(lettre);
     }
 }
 
