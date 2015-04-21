@@ -533,13 +533,13 @@ bool meme_langage (const char *expr1, const char* expr2)
 void
 remplir_systeme(int origine, char lettre, int fin, void *data)
 {
-  if (data[origine][fin])
+  if ((Systeme)data[origine][fin])
     {
-      data[origine][fin] = Union(data[origine][fin], Lettre(lettre));
+      (Systeme)data[origine][fin] = Union((Systeme)data[origine][fin], Lettre(lettre));
     }
   else
     {
-      data[origine][fin] = Lettre(lettre);
+      (Systeme)data[origine][fin] = Lettre(lettre);
     }
 }
 
@@ -565,7 +565,7 @@ systeme(Automate *automate)
 	  tab[i][colonnes - 1] = Epsilon();
 	}
     }
-  pour_toute_transition(minimal, remplir_systeme, tab);
+  pour_toute_transition(automate, remplir_systeme, tab);
   
   return tab;
 }
