@@ -314,17 +314,30 @@ void numeroter_rationnel(Rationnel *rat)
 
 bool contient_mot_vide(Rationnel *rat)
 {
-    if(!rat)
+  if(!rat)
     return false;
- 
-    if(get_etiquette(rat) == EPSILON || get_etiquette(rat) == STAR)
-      return true;
-    
-    if(fils_gauche (rat) != NULL)  
-      if(fils_droit (rat) != NULL)
-	return contient_mot_vide(fils_gauche(rat)) || contient_mot_vide(fils_droit(rat));
-    
-    return false;
+  
+  switch(get_etiquette(rat))
+    {
+    case EPSILON:
+    case STAR:
+      return true;      
+      break;
+      
+    case LETTRE:     
+      return false;
+      break;
+      
+    case UNION:
+      return contient_mot_vide(fils_gauche(rat)) || contient_mot_vide(fils_droit(rat));
+      break;
+
+    case CONCAT:
+      return contient_mot_vide(fils_gauche(rat)) && contient_mot_vide(fils_droit(rat));	    
+      break;   
+    }
+  return false;
+  
 }
 
 void trouver_premier(Ensemble * e, Rationnel * rat){
@@ -336,7 +349,7 @@ void trouver_premier(Ensemble * e, Rationnel * rat){
       break;
       
     case LETTRE:     
-      ajouter_element(e,(intptr_t)get_position_min(rat));
+      ajouter_element(e,(intptr_t)get_position_min(rat)); 
       break;
       
     case UNION:
@@ -346,9 +359,8 @@ void trouver_premier(Ensemble * e, Rationnel * rat){
 
     case CONCAT:
       if(contient_mot_vide(fils_gauche(rat)))
-	  trouver_premier(e,fils_droit(rat));
-	    
-      trouver_premier(e,fils_gauche(rat));
+	trouver_premier(e,fils_droit(rat));	
+      trouver_premier(e,fils_gauche(rat));     	    
       break;
       
     case STAR:
@@ -411,20 +423,16 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
 
   switch(get_etiquette(rat))
     {
-    case EPSILON:
-      break;
-      
+    case EPSILON:      
     case LETTRE:    
       break;
       
-    case UNION:
-      
+    case UNION:     
       e = trouver_suivant(e, fils_gauche(rat), position);
       e = trouver_suivant(e, fils_droit(rat), position);   
       break;
 
     case CONCAT:
- 
       last =  dernier(fils_gauche(rat));    
       if(est_dans_l_ensemble(last, (intptr_t)position))  //si la position est dans les derniers du membre gauche
 	{
@@ -440,7 +448,11 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
 
       last = dernier(fils(rat));
       
+<<<<<<< HEAD
       if(est_dans_l_ensemble(last, (intptr_t)position)) 
+=======
+      if(est_dans_l_ensemble(last, (intptr_t)position))
+>>>>>>> master
 	{
 	  first = premier(fils(rat));
 
@@ -459,9 +471,85 @@ Ensemble *suivant(Rationnel *rat, int position)
   return e; 
 }
 
-Automate *Glushkov(Rationnel *rat)
+static Rationnel*
+trouver_rationnel(Rationnel *rat, int position)
 {
-   A_FAIRE_RETURN(NULL);
+  Rationnel *result;
+
+  if (fils_droit(rat))
+    {
+      result = trouver_rationnel(fils_droit(rat), position);
+
+      if (result)
+	{
+	  return result;
+	}
+    }
+
+  if (fils_gauche(rat))
+    {
+      result = trouver_rationnel(fils_gauche(rat), position);
+
+      if (result)
+	{
+	  return result;
+	}
+    }
+
+  if (get_etiquette(rat) == LETTRE && get_position_min(rat) == position)
+    {
+      return rat;
+    }
+
+  return NULL;
+}
+
+Automate*
+Glushkov(Rationnel *rat)
+{
+  Automate *result = NULL;
+  Ensemble *ensPremier = NULL, *ensSuivant = NULL, *ensDernier = NULL;
+  Ensemble_iterateur ensIt;
+
+  result = creer_automate();
+  ajouter_etat_initial(result, 0);
+
+  if (contient_mot_vide(rat))
+    {
+      ajouter_etat_final(result, 0);
+    }
+
+  ensPremier = premier(rat);  
+  for (ensIt = premier_iterateur_ensemble(ensPremier);
+       !iterateur_est_vide(ensIt);
+       ensIt = iterateur_suivant_ensemble(ensIt))
+    {
+      ajouter_transition(result, 0, get_lettre(trouver_rationnel(rat, get_element(ensIt))), get_element(ensIt));
+    }
+  liberer_ensemble(ensPremier);
+  
+  for (int i = 1; i <= get_position_max(rat); ++i)
+    {
+      ensSuivant = suivant(rat, i);      
+      for (ensIt = premier_iterateur_ensemble(ensSuivant);
+	   !iterateur_est_vide(ensIt);
+	   ensIt = iterateur_suivant_ensemble(ensIt))
+	{
+	  ajouter_transition(result, i, get_lettre(trouver_rationnel(rat, get_element(ensIt))), get_element(ensIt));
+	}
+      liberer_ensemble(ensSuivant);
+    }
+
+  ensDernier = dernier(rat);
+  for (ensIt = premier_iterateur_ensemble(ensDernier);
+       !iterateur_est_vide(ensIt);
+       ensIt = iterateur_suivant_ensemble(ensIt))
+    {
+      ajouter_etat_final(result, get_element(ensIt));
+    }
+  liberer_ensemble(ensDernier);
+
+  return result;
 }
 
 void ajouter_finaux(const intptr_t elem, void* automate)
