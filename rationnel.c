@@ -102,7 +102,6 @@ Noeud get_etiquette(Rationnel* rat)
 
 char get_lettre(Rationnel* rat)
 {
-   assert (get_etiquette(rat) == LETTRE);
    return rat->lettre;
 }
 
@@ -543,7 +542,6 @@ Glushkov(Rationnel *rat)
       ajouter_etat_final(result, get_element(ensIt));
     }
   liberer_ensemble(ensDernier);
-
   return result;
 }
 
@@ -606,28 +604,39 @@ bool meme_langage (const char *expr1, const char* expr2)
   return false; 
 }
 
+void remplir_systeme(int origine, char lettre, int fin, void* data)
+{  
+  if (((Systeme)data)[origine][fin])
+    {
+      ((Systeme)data)[origine][fin] = Union(((Systeme)data)[origine][fin], Lettre(lettre));
+    }
+  else
+    {
+      ((Systeme)data)[origine][fin] = Lettre(lettre);
+    }
+}
+
+
 Systeme systeme(Automate *automate)
 {
-  Automate *minimal = creer_automate_minimal(automate);
+  int lignes = taille_ensemble(get_etats(automate)); 
+  int colonnes = lignes + 1;
+  Systeme tab = malloc(sizeof(*tab) * lignes);
   
-  int nb_colonnes = taille_ensemble(get_etats(minimal));
-  int nb_lignes = nb_colonnes+1;
-  
-  Systeme tab = malloc(sizeof(Rationnel**)*nb_lignes);
-  for(int i = 0; i < nb_lignes; i++)
+  for (int i = 0; i < lignes; i++)
     {
-      
-      tab[i] = malloc(sizeof(Rationnel*)*nb_colonnes);
-      for(int j = 0; j < nb_colonnes; j++)
-	{ 
+      tab[i] = malloc(sizeof(Rationnel*) * colonnes);
+      for (int j = 0; j < colonnes; j++)
+	{
 	  tab[i][j] = NULL;
 	}
-      
-      //si l'etat est final, on place EPSILON en tab[i][nb_colonnes-1]
-  //Utilise pour toute_transition pour le reste. Tu devras creer une fonction remplir_systeme je pense. Pense à gérer le cas où deux lettres bouclent sur le mm état (X0 = (a+b)X0 par exemple.
+      if (est_un_etat_final_de_l_automate(automate, i))
+	{
+	  tab[i][colonnes-1] = Epsilon();
+	}
     }
-  
-  return NULL; //return tab.
+  pour_toute_transition(automate, remplir_systeme, tab);
+  return tab;
 }
 
 void print_ligne(Rationnel **ligne, int n)
@@ -652,17 +661,18 @@ void print_systeme(Systeme systeme, int n)
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {
-  if(contient_mot_vide(ligne[numero_variable]))//X = UX + V où U n'est pas effaçable.
-    return NULL;
-  else
+  print_ligne(ligne,n);
+  if(! contient_mot_vide(ligne[numero_variable]))//X = UX + V où U n'est pas effaçable.
     {      
       for(int i = 0; i < n; i++) //on parcourt les différents membres de la ligne.
 	{
 	  if(ligne[i] != NULL) //Inutile de traiter les transitions inexistantes 
 	    {  
-	      if(ligne[i] == Epsilon()) //dans le cas où V=epsilon -> U*
+	      if(get_etiquette(ligne[i])==EPSILON) //dans le cas où V=epsilon -> U*
 		{		
 		  ligne[i] = Star(ligne[numero_variable]);
+		  printf("YOLO");
+		  
 		}
 	      else //U*V
 		{
