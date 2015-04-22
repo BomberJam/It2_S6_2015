@@ -671,7 +671,6 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
 	      if(get_etiquette(ligne[i])==EPSILON) //dans le cas où V=epsilon -> U*
 		{		
 		  ligne[i] = Star(ligne[numero_variable]);
-		  printf("YOLO");
 		  
 		}
 	      else //U*V
