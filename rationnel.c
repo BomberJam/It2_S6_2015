@@ -434,7 +434,7 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
 
     case CONCAT:
       last =  dernier(fils_gauche(rat));    
-      if(est_dans_l_ensemble(last, (intptr_t)position))  //si la lettre est la derniere du membre gauche
+      if(est_dans_l_ensemble(last, (intptr_t)position))  //si la position est dans les derniers du membre gauche
 	{
 	  first = premier(fils_droit(rat));	  //on crée un ensemble des premiers du membre droit
 	  e =  creer_union_ensemble(e, first); //on fait l'union des deux ensembles
@@ -446,9 +446,8 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
       
     case STAR:
 
-      last = dernier(fils(rat));
-      
-      if(est_dans_l_ensemble(last, (intptr_t)position))
+      last = dernier(fils(rat));      
+      if(est_dans_l_ensemble(last, (intptr_t)position)) 
 	{
 	  first = premier(fils(rat));
 
@@ -548,29 +547,87 @@ Glushkov(Rationnel *rat)
   return result;
 }
 
+void ajouter_finaux(const intptr_t elem, void* automate)
+{
+  ajouter_etat_final(((Automate*) automate), elem);
+}
+
+void ajouter_initiaux(const intptr_t elem, void* automate)
+{
+  ajouter_etat_initial(((Automate*) automate), elem);
+}
+
+void ajouter_etats(const intptr_t elem, void* automate)
+{
+  ajouter_etat(((Automate*) automate), elem);
+}
+
+void ajouter_transitions(int origine, char lettre, int fin, void* automate)
+{
+  ajouter_transition(((Automate*)automate), origine, lettre, fin);
+}
+
+Automate* creer_automate_complementaire(const Automate *automate)
+{
+  Automate * nouvel_automate = creer_automate();
+  Ensemble * f = creer_difference_ensemble(automate -> etats, automate -> finaux);
+  
+  pour_tout_element(f, ajouter_finaux, ((Automate*) nouvel_automate));
+  pour_tout_element(automate -> initiaux, ajouter_initiaux, ((Automate*) nouvel_automate));
+  pour_tout_element(automate -> finaux, ajouter_etats, ((Automate*) nouvel_automate));
+  
+  pour_toute_transition(automate, ajouter_transitions, ((Automate*) nouvel_automate));
+  
+  return nouvel_automate;
+}
+
 bool meme_langage (const char *expr1, const char* expr2)
 {
-  /*Rationnel *rat1 = expression_to_rationnel(expr1);
-  numeroter_rationnel(rat1);
-  Automate *auto1 = Glushkov(rat1);
-  Automate *auto_deter1 = creer_automate_deterministe(auto1);
-  Automate *auto_mini1 =  creer_automate_minimal(auto_deter1);
-  rat1 = Arden(auto_mini1);
-
+  Rationnel *rat1 = expression_to_rationnel(expr1);
   Rationnel *rat2 = expression_to_rationnel(expr2);
+  numeroter_rationnel(rat1);
   numeroter_rationnel(rat2);
-  Automate *auto2 = Glushkov(rat2);
-  Automate *auto_deter2 = creer_automate_deterministe(auto2);
-  Automate *auto_mini2 =  creer_automate_minimal(auto_deter2);
-  rat2 = Arden(auto_mini2);
   
-  return(rat1 == rat2); // il existe surement une fonction qui pour comparer 2 rat*/
-  return false;
+  Automate *min1 = creer_automate_minimal(Glushkov(rat1));
+  Automate *min2 = creer_automate_minimal(Glushkov(rat2));
+
+  Automate *a1=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min1),min2));
+  Automate *a2=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complementaire(min2),min1));
+
+  //L1 est inclus ou égal à L2 ssi  intersection(L1, complémentaire(L2)) = ensemble vide
+  //L1 est inclus ou égal à L2 ssi  intersection(L2, complémentaire(L1)) = ensemble vide
+  //Dans un automate, on obtient un tel résultat quand il n'y a pas d'état final.
+  //On vérifie donc si l'ensemble des états finaux de a1 et a2 est vide ou non.
+  //Si oui, a1 et a2 reconnaissent le même langage.
+  if((taille_ensemble(a1->finaux) == 0) && (taille_ensemble(a2->finaux) == 0))
+    {
+      return true;
+    } 
+  return false; 
 }
 
 Systeme systeme(Automate *automate)
 {
-   A_FAIRE_RETURN(NULL);
+  Automate *minimal = creer_automate_minimal(automate);
+  
+  int nb_colonnes = taille_ensemble(get_etats(minimal));
+  int nb_lignes = nb_colonnes+1;
+  
+  Systeme tab = malloc(sizeof(Rationnel**)*nb_lignes);
+  for(int i = 0; i < nb_lignes; i++)
+    {
+      
+      tab[i] = malloc(sizeof(Rationnel*)*nb_colonnes);
+      for(int j = 0; j < nb_colonnes; j++)
+	{ 
+	  tab[i][j] = NULL;
+	}
+      
+      //si l'etat est final, on place EPSILON en tab[i][nb_colonnes-1]
+  //Utilise pour toute_transition pour le reste. Tu devras creer une fonction remplir_systeme je pense. Pense à gérer le cas où deux lettres bouclent sur le mm état (X0 = (a+b)X0 par exemple.
+    }
+  
+  return NULL; //return tab.
 }
 
 void print_ligne(Rationnel **ligne, int n)
@@ -595,12 +652,33 @@ void print_systeme(Systeme systeme, int n)
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {
-   A_FAIRE_RETURN(NULL);
+  if(contient_mot_vide(ligne[numero_variable]))//X = UX + V où U n'est pas effaçable.
+    return NULL;
+  else
+    {      
+      for(int i = 0; i < n; i++) //on parcourt les différents membres de la ligne.
+	{
+	  if(ligne[i] != NULL) //Inutile de traiter les transitions inexistantes 
+	    {  
+	      if(ligne[i] == Epsilon()) //dans le cas où V=epsilon -> U*
+		{		
+		  ligne[i] = Star(ligne[numero_variable]);
+		}
+	      else //U*V
+		{
+		  ligne[i] = Concat(Star(ligne[numero_variable]), ligne[i]);
+		}	    
+	    }
+	}
+    } 
+  ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
+  return ligne;
 }
+  
 
 Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **valeur_variable, int n)
 {
-   A_FAIRE_RETURN(NULL);
+  A_FAIRE_RETURN(NULL);
 }
 
 Systeme resoudre_systeme(Systeme systeme, int n)
@@ -610,6 +688,6 @@ Systeme resoudre_systeme(Systeme systeme, int n)
 
 Rationnel *Arden(Automate *automate)
 {
-   A_FAIRE_RETURN(NULL);
+  A_FAIRE_RETURN(NULL);
 }
 

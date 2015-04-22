@@ -29,17 +29,17 @@
 
 int test_meme_langage(){
 	int result = 1;
-    {
-       TEST(
-          1
-          && meme_langage("(a.b)*.a", "a.(b.a)*")
-          && meme_langage("(a*.b*)*", "(a+b)*")
-          && meme_langage("(a*.b*)*", "(a+b*)*")
-          && meme_langage("(a*.b*)*", "(a*+b*)*")
-          && ! meme_langage("(a*.b*)*", "(a*+b*)")
-          , result);
-    }
 
+	{
+	  TEST(
+	       1
+	       && meme_langage("(a.b)*.a", "a.(b.a)*")
+	       && meme_langage("(a*.b*)*", "(a+b)*")
+	       && meme_langage("(a*.b*)*", "(a+b*)*")
+	       && meme_langage("(a*.b*)*", "(a*+b*)*")
+	       && ! meme_langage("(a*.b*)*", "(a*+b*)")
+	       , result);
+	}
     return result;
 }
 
