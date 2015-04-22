@@ -82,11 +82,21 @@ int test_suivant(){
 	 , result);
   }
     
+<<<<<<< HEAD
   {
     Rationnel * rat;
     rat = expression_to_rationnel("(a.a)*.(b+c*).(a.b*)");
     numeroter_rationnel(rat);
     Ensemble * e = suivant(rat, 2);
+=======
+<<<<<<< HEAD
+=======
+    {
+      Rationnel * rat;
+      rat = expression_to_rationnel("(a.a)*.(b+c*).(a.b*)");
+      numeroter_rationnel(rat);
+      Ensemble * e = suivant(rat, 2);
+>>>>>>> marespiaut
        
     TEST(
 	 1
@@ -99,11 +109,20 @@ int test_suivant(){
 	 , result);
   }
     
+<<<<<<< HEAD
   {
     Rationnel * rat;
     rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
     numeroter_rationnel(rat);
     Ensemble * e = suivant(rat, 2);
+=======
+>>>>>>> master
+    {
+       Rationnel * rat;
+       rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
+       numeroter_rationnel(rat);
+       Ensemble * e = suivant(rat, 2);
+>>>>>>> marespiaut
        
     TEST(
 	 1

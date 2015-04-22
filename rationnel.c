@@ -446,8 +446,18 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
       
     case STAR:
 
+<<<<<<< HEAD
       last = dernier(fils(rat));      
       if(est_dans_l_ensemble(last, (intptr_t)position)) 
+=======
+      last = dernier(fils(rat));
+      
+<<<<<<< HEAD
+      if(est_dans_l_ensemble(last, (intptr_t)position)) 
+=======
+      if(est_dans_l_ensemble(last, (intptr_t)position))
+>>>>>>> master
+>>>>>>> marespiaut
 	{
 	  first = premier(fils(rat));
 
@@ -606,8 +616,10 @@ bool meme_langage (const char *expr1, const char* expr2)
   return false; 
 }
 
-Systeme systeme(Automate *automate)
+void
+remplir_systeme(int origine, char lettre, int fin, void *data)
 {
+<<<<<<< HEAD
   Automate *minimal = creer_automate_minimal(automate);
   
   int nb_colonnes = taille_ensemble(get_etats(minimal));
@@ -628,14 +640,51 @@ Systeme systeme(Automate *automate)
     }
   
   return NULL; //return tab.
+=======
+  if (((Systeme)data)[origine][fin])
+    {
+      ((Systeme)data)[origine][fin] = Union(((Systeme)data)[origine][fin], Lettre(lettre));
+    }
+  else
+    {
+      ((Systeme)data)[origine][fin] = Lettre(lettre);
+    }
+}
+
+Systeme
+systeme(Automate *automate)
+{
+  int colonnes = taille_ensemble(get_etats(automate));
+  int lignes = colonnes + 1;
+
+  Systeme tab = malloc(sizeof(*tab) * lignes);
+
+  for (int i = 0; i < lignes; i++)
+    {
+      tab[i] = malloc(sizeof(Rationnel*) * colonnes);
+      
+      for (int j = 0; j < colonnes; j++)
+	{
+	  tab[i][j] = NULL;
+	}
+      
+      if (est_un_etat_final_de_l_automate(automate, i))
+	{
+	  tab[i][colonnes - 1] = Epsilon();
+	}
+    }
+  pour_toute_transition(automate, remplir_systeme, tab);
+  
+  return tab;
+>>>>>>> marespiaut
 }
 
 void print_ligne(Rationnel **ligne, int n)
 {
-   for (int j = 0; j <=n; j++)
+   for (int j = 0; j <= n; j++)
       {
          print_rationnel(ligne[j]);
-         if (j<n)
+         if (j < n)
             printf("X%d\t+\t", j);
       }
    printf("\n");
