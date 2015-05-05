@@ -636,6 +636,7 @@ Systeme systeme(Automate *automate)
 	}
     }
   pour_toute_transition(automate, remplir_systeme, tab);
+  
   return tab;
 }
 
@@ -661,42 +662,38 @@ void print_systeme(Systeme systeme, int n)
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {
-  print_ligne(ligne,n);
   if(! contient_mot_vide(ligne[numero_variable]))//X = UX + V où U n'est pas effaçable.
     {      
-      for(int i = 0; i < n; i++) //on parcourt les différents membres de la ligne.
+      if(ligne[numero_variable] != NULL) //Inutile de traiter les transitions inexistantes 
 	{
-	  if(ligne[i] != NULL) //Inutile de traiter les transitions inexistantes 
-	    {  
-	      if(get_etiquette(ligne[i])==EPSILON) //dans le cas où V=epsilon -> U*
-		{		
-		  ligne[i] = Star(ligne[numero_variable]);
-		  
-		}
-	      else //U*V
-		{
-		  ligne[i] = Concat(Star(ligne[numero_variable]), ligne[i]);
-		}	    
-	    }
+	  ligne[n] = Concat(Star(ligne[numero_variable]), ligne[n]);
 	}
+      ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.	  
     } 
-  ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
   return ligne;
 }
   
 
-Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **valeur_variable, int n)
+Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **ligne_substituee, int n) 
 {
-  A_FAIRE_RETURN(NULL);
+  Rationnel **nouvelle_ligne = malloc(sizeof(Rationnel));
+  nouvelle_ligne = resoudre_variable_arden(ligne_substituee,numero_variable,n);
+ 
+  for(int i = 0; i <= n; i++) 
+    {
+      nouvelle_ligne[i] = Union(Concat(ligne[numero_variable],ligne_substituee[i]), ligne[i]);
+    }
+  nouvelle_ligne[numero_variable] = NULL;  
+  return nouvelle_ligne;
 }
 
 Systeme resoudre_systeme(Systeme systeme, int n)
 {
-   A_FAIRE_RETURN(NULL);
+  A_FAIRE_RETURN(NULL); //on appelle les 2 fonctions ci-dessus
 }
 
 Rationnel *Arden(Automate *automate)
 {
-  A_FAIRE_RETURN(NULL);
+  A_FAIRE_RETURN(NULL); //on appelle resoudre_systeme, puis on retourne l'union de tous les etats initiaux
 }
 
