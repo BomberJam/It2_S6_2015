@@ -661,15 +661,15 @@ void print_systeme(Systeme systeme, int n)
 }
 
 Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
-{
-  if(! contient_mot_vide(ligne[numero_variable]))//X = UX + V où U n'est pas effaçable.
-    {      
-      if(ligne[numero_variable] != NULL) //Inutile de traiter les transitions inexistantes 
-	{
-	  ligne[n] = Concat(Star(ligne[numero_variable]), ligne[n]);
-	}
-      ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.	  
-    } 
+{     
+  if(ligne[numero_variable] != NULL)
+    {     
+      if(ligne[n] != NULL)
+	ligne[n] = Concat(Star(ligne[numero_variable]), ligne[n]);
+      else
+	ligne[n] = Star(ligne[numero_variable]);
+    }      
+  ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.	  
   return ligne;
 }
   
@@ -694,6 +694,9 @@ Systeme resoudre_systeme(Systeme systeme, int n)
 
 Rationnel *Arden(Automate *automate)
 {
-  A_FAIRE_RETURN(NULL); //on appelle resoudre_systeme, puis on retourne l'union de tous les etats initiaux
+  //Systeme tab = systeme(automate);
+  //tab = resoudre_systeme(tab, get_etats(automate));
+  //return tab;
+  A_FAIRE_RETURN(NULL); 
 }
 
