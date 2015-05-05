@@ -20,7 +20,7 @@ int test_resoudre_variable_arden()
     ajouter_etat_final( automate, 0);
     ajouter_etat_final( automate, 2);
 
-    Systeme tab = systeme(automate);   
+    Systeme tab = systeme(automate); 
     Rationnel **res = resoudre_variable_arden(tab[2],2,3);
   
     TEST(

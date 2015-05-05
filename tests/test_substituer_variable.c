@@ -22,7 +22,7 @@ int test_substituer_variable()
     
     Systeme tab = systeme(automate);
     Rationnel **res = substituer_variable(tab[1],2,tab[2],3);
-  
+    print_ligne(res,3);
     TEST(
 	 1
 	 && get_etiquette(res[0]) == CONCAT
