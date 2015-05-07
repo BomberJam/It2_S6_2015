@@ -24,6 +24,7 @@
 #define __RATIONNEL_H__
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "automate.h"
 #include "ensemble.h"
 
@@ -272,6 +273,7 @@ void rationnel_to_dot(Rationnel *rat, char* nom_fichier);
  */   
 int rationnel_to_dot_aux(Rationnel *rat, FILE *output, int pere, int noeud_courant);
 
+
 /**
  * @brief @todo Affecte les positions <b>position_min</b> et
  * <b>position_max</b> de toutes les sous-expressions d'une expression
@@ -320,8 +322,6 @@ Ensemble *suivant(Rationnel *, int);
 Automate *Glushkov(Rationnel *rat);
 
 Automate* creer_automate_complement(const Automate *automate);
-
-bool automates_reconnaissent_le_meme_language( Automate *automate1, Automate *automate2 );
 
 /**
  * @brief @todo

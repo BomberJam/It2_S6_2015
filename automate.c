@@ -25,6 +25,7 @@
 #include "fifo.h"
 
 #include <search.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -846,10 +847,10 @@ Automate * creer_automate_deterministe( const Automate* automate ){
 
 Automate * creer_automate_minimal( const Automate* automate ){
   //modéle de Brzozowski : on effectue le miroir d'un automate puis sa déterminisation deux fois de suite.
-  Automate* tmp_automate = miroir(automate);
-  tmp_automate = creer_automate_deterministe(tmp_automate);
-  tmp_automate = miroir(tmp_automate);
-  Automate* automate_minimal = creer_automate_deterministe(tmp_automate);
+  Automate *tmp_automate = miroir(automate);
+  Automate *tmp_automate2 = creer_automate_deterministe(tmp_automate);
+  Automate *tmp_automate3 = miroir(tmp_automate2);
+  Automate *automate_minimal = creer_automate_deterministe(tmp_automate3);
   return automate_minimal;   
 }
 

@@ -501,6 +501,7 @@ trouver_rationnel(Rationnel *rat, int position)
 Automate*
 Glushkov(Rationnel *rat)
 {
+  numeroter_rationnel(rat);
   Automate *result = NULL;
   Ensemble *ensPremier = NULL, *ensSuivant = NULL, *ensDernier = NULL;
   Ensemble_iterateur ensIt;
@@ -579,37 +580,38 @@ Automate* creer_automate_complement(const Automate *automate)
   return nouvel_automate;
 }
 
-bool automates_reconnaissent_le_meme_language( Automate *automate1, Automate *automate2)
+int automates_reconnaissent_le_meme_language( Automate *min1, Automate *min2)
 {
   //L1 est inclus ou égal à L2 ssi  intersection(L1, complémentaire(L2)) = ensemble vide
   //L1 est inclus ou égal à L2 ssi  intersection(L2, complémentaire(L1)) = ensemble vide
   //Dans un automate, on obtient un tel résultat quand il n'y a pas d'état final.
   //On vérifie donc si l'ensemble des états finaux de a1 et a2 est vide ou non.
   //Si oui, a1 et a2 reconnaissent le même langage.
-  if((taille_ensemble(automate1->finaux) == 0) && (taille_ensemble(automate2->finaux) == 0))
+  
+  Automate *a1=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complement(creer_automate_deterministe(min1)),min2));
+  Automate *a2=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complement(creer_automate_deterministe(min2)),min1));
+  
+  if(comparer_ensemble(get_alphabet(min1) , get_alphabet(min2)) != 0)
+    {      
+      return 0;
+    }
+      
+  if((taille_ensemble(a1->finaux) == 0) && (taille_ensemble(a2->finaux) == 0))
     {
-      return true;
+      return 1;
     } 
-  return false; 
+  return 0; 
 }
 
 bool meme_langage (const char *expr1, const char* expr2)
 {
   Rationnel *rat1 = expression_to_rationnel(expr1);
   Rationnel *rat2 = expression_to_rationnel(expr2);
-  numeroter_rationnel(rat1);
-  numeroter_rationnel(rat2);
-  
+     
   Automate *min1 = creer_automate_minimal(Glushkov(rat1));
   Automate *min2 = creer_automate_minimal(Glushkov(rat2));
-
-  Automate *a1=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complement(min1),min2));
-  Automate *a2=creer_automate_minimal(creer_intersection_des_automates(creer_automate_complement(min2),min1));
-
-  if(comparer_ensemble(get_alphabet(a2) , get_alphabet(a1)) != 0)
-    return false;
-  else
-    return automates_reconnaissent_le_meme_language( a1, a2 );
+    
+  return automates_reconnaissent_le_meme_language( min1, min2 );
 }
 
 void remplir_systeme(int origine, char lettre, int fin, void* data)

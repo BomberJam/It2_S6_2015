@@ -59,6 +59,9 @@ typedef struct Cle {
  */
 Automate * creer_automate();
 
+int automates_reconnaissent_le_meme_language( Automate *automate1, Automate *automate2 );
+
+
 /**
  * @brief Détruit un automate.
  * 
