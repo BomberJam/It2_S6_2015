@@ -32,7 +32,7 @@ int test_glushkov(){
 	
 	{
 		Rationnel * expression = expression_to_rationnel( "a" );
-		Automate * automate1 = Glushkov( expression );
+		Automate * automate1 = Glushkov(expression);
 
 		Automate * automate2 = creer_automate();
 		ajouter_etat_initial( automate2, 0 );
@@ -55,17 +55,18 @@ int test_glushkov(){
 		liberer_automate( automate1 );
 		liberer_automate( automate2 );
 	}
-
+	
 	{
 		Rationnel * expression = expression_to_rationnel( "b" );
 		Automate * automate1 = Glushkov( expression );
-
 		Automate * automate2 = creer_automate();
 		ajouter_etat_initial( automate2, 0 );
 		ajouter_transition( automate2, 0, 'b', 1 );
 		ajouter_etat_final( automate2, 1 );
+		
 		print_automate(automate1);
 		print_automate(automate2);
+		
 		TEST( 
 			1
 			&& expression 
@@ -78,7 +79,7 @@ int test_glushkov(){
 		liberer_automate( automate1 );
 		liberer_automate( automate2 );
 	}
-
+	
 	{
 		Rationnel * expression = expression_to_rationnel( "a.b" );
 		Automate * automate1 = Glushkov( expression );
@@ -88,6 +89,10 @@ int test_glushkov(){
 		ajouter_transition( automate2, 0, 'a', 1 );
 		ajouter_transition( automate2, 1, 'b', 2 );
 		ajouter_etat_final( automate2, 2 );
+
+		print_automate(automate1);
+		printf("\n");
+		print_automate(automate2);
 
 		TEST( 
 			1
@@ -104,7 +109,7 @@ int test_glushkov(){
 
 	{
 		Rationnel * expression = expression_to_rationnel( "a+b" );
-		Automate * automate1 = Glushkov( expression );
+		Automate * automate1 = Glushkov( expression );	      
 
 		Automate * automate2 = creer_automate();
 		ajouter_etat_initial( automate2, 0 );
@@ -112,7 +117,10 @@ int test_glushkov(){
 		ajouter_transition( automate2, 0, 'b', 2 );
 		ajouter_etat_final( automate2, 1 );
 		ajouter_etat_final( automate2, 2 );
-
+		
+		print_automate(automate1);
+		printf("\n");
+		print_automate(automate2);
 		TEST( 
 			1
 			&& expression 
@@ -151,7 +159,10 @@ int test_glushkov(){
 		ajouter_transition( automate2, 3, 'd', 4 );
 
 		ajouter_etat_final( automate2, 4 );
-
+		
+		print_automate(automate1);
+		printf("\n");
+		print_automate(automate2);
 		TEST( 
 			1
 			&& expression 
@@ -194,7 +205,10 @@ int test_glushkov(){
 		ajouter_etat_final( automate2, 1 );
 		ajouter_etat_final( automate2, 4 );
 		ajouter_etat_final( automate2, 6 );
-
+		
+		print_automate(automate1);
+		printf("\n");
+		print_automate(automate2);
 		TEST( 
 			1
 			&& expression 
