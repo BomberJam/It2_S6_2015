@@ -2,7 +2,7 @@
  *   Ce fichier fait partie d'un projet de programmation donné en Licence 3 
  *   à l'Université de Bordeaux
  *
- *   Copyright (C) 2015 Giuliana Bianchi, Adrien Boussicault, Thomas Place, Marc Zeitoun
+ *   Copyright (C) 2015 Adrien Boussicault
  *
  *    This Library is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -19,76 +19,202 @@
  */
 
 
-#include <automate.h>
-#include <rationnel.h>
-#include <ensemble.h>
-#include <outils.h>
-#include <parse.h>
-#include <scan.h>
+#include "rationnel.h"
+#include "outils.h"
+#include "fifo.h"
+
+#include <signal.h>
+#include <errno.h>
 
 int test_glushkov(){
-	int result = 1;	
-    {
-       Rationnel * rat;
-       rat = expression_to_rationnel("a.b");
-       numeroter_rationnel(rat);
-       Automate * automate = Glushkov(rat);
-       
-       TEST(
-          1
-          && le_mot_est_reconnu(automate, "ab")
-          && ! le_mot_est_reconnu(automate, "a")
-          && ! le_mot_est_reconnu(automate, "")
-          && ! le_mot_est_reconnu(automate, "b")
-          && ! le_mot_est_reconnu(automate, "aba")
-          && ! le_mot_est_reconnu(automate, "abb")
-          && ! le_mot_est_reconnu(automate, "ba")
-          , result);
-    }
-    	
-    {
-       Rationnel * rat;
-       rat = expression_to_rationnel("(a.a)*.(b*.c)*");
-       numeroter_rationnel(rat);
-       Automate * automate = Glushkov(rat);
-       
-       TEST(
-          1
-          && ! le_mot_est_reconnu(automate, "ab")
-          && ! le_mot_est_reconnu(automate, "a")
-          && le_mot_est_reconnu(automate, "aa")
-          && le_mot_est_reconnu(automate, "")
-          && le_mot_est_reconnu(automate, "aaaabccbbbc")
-          && ! le_mot_est_reconnu(automate, "aaaaabccbbbc")
-          && ! le_mot_est_reconnu(automate, "aaaabccbbb")
-          , result);
-    }
-    
-    {
-       Rationnel * rat;
-       rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
-       numeroter_rationnel(rat);
-       Automate * automate = Glushkov(rat);
-       
-       TEST(
-          1
-          && le_mot_est_reconnu(automate, "ab")
-          && le_mot_est_reconnu(automate, "a")
-          && ! le_mot_est_reconnu(automate, "aa")
-          && ! le_mot_est_reconnu(automate, "")
-          && ! le_mot_est_reconnu(automate, "aaaabcc")
-          && ! le_mot_est_reconnu(automate, "aaaabccabbb")
-          && le_mot_est_reconnu(automate, "aaaaccabbb")
-          && ! le_mot_est_reconnu(automate, "aaaabccaabbb")
-          , result);
-	  }
-    return result;
+
+	int result = 1;
+	
+	{
+		Rationnel * expression = expression_to_rationnel( "a" );
+		Automate * automate1 = Glushkov( expression );
+
+		Automate * automate2 = creer_automate();
+		ajouter_etat_initial( automate2, 0 );
+		ajouter_transition( automate2, 0, 'a', 1 );
+		ajouter_etat_final( automate2, 1 );
+
+		print_automate(automate1);
+		print_automate(automate2);
+		
+		
+		TEST( 
+			1
+			&& expression 
+			&& automate1
+			&& automate2
+			&& automates_reconnaissent_le_meme_language( automate1, automate2 )
+			, result
+		);
+
+		liberer_automate( automate1 );
+		liberer_automate( automate2 );
+	}
+
+	{
+		Rationnel * expression = expression_to_rationnel( "b" );
+		Automate * automate1 = Glushkov( expression );
+
+		Automate * automate2 = creer_automate();
+		ajouter_etat_initial( automate2, 0 );
+		ajouter_transition( automate2, 0, 'b', 1 );
+		ajouter_etat_final( automate2, 1 );
+		print_automate(automate1);
+		print_automate(automate2);
+		TEST( 
+			1
+			&& expression 
+			&& automate1
+			&& automate2
+			&& automates_reconnaissent_le_meme_language( automate1, automate2 )
+			, result
+		);
+
+		liberer_automate( automate1 );
+		liberer_automate( automate2 );
+	}
+
+	{
+		Rationnel * expression = expression_to_rationnel( "a.b" );
+		Automate * automate1 = Glushkov( expression );
+
+		Automate * automate2 = creer_automate();
+		ajouter_etat_initial( automate2, 0 );
+		ajouter_transition( automate2, 0, 'a', 1 );
+		ajouter_transition( automate2, 1, 'b', 2 );
+		ajouter_etat_final( automate2, 2 );
+
+		TEST( 
+			1
+			&& expression 
+			&& automate1
+			&& automate2
+			&& automates_reconnaissent_le_meme_language( automate1, automate2 )
+			, result
+		);
+
+		liberer_automate( automate1 );
+		liberer_automate( automate2 );
+	}
+
+	{
+		Rationnel * expression = expression_to_rationnel( "a+b" );
+		Automate * automate1 = Glushkov( expression );
+
+		Automate * automate2 = creer_automate();
+		ajouter_etat_initial( automate2, 0 );
+		ajouter_transition( automate2, 0, 'a', 1 );
+		ajouter_transition( automate2, 0, 'b', 2 );
+		ajouter_etat_final( automate2, 1 );
+		ajouter_etat_final( automate2, 2 );
+
+		TEST( 
+			1
+			&& expression 
+			&& automate1
+			&& automate2
+			&& automates_reconnaissent_le_meme_language( automate1, automate2 )
+			, result
+		);
+
+		liberer_automate( automate1 );
+		liberer_automate( automate2 );
+	}
+
+	{
+		Rationnel * expression = expression_to_rationnel( "((a*.b)*.c)*.d" );
+		Automate * automate1 = Glushkov( expression );
+
+		Automate * automate2 = creer_automate();
+		ajouter_etat_initial( automate2, 0 );
+
+		ajouter_transition( automate2, 0, 'a', 1 );
+		ajouter_transition( automate2, 0, 'b', 2 );
+		ajouter_transition( automate2, 0, 'c', 3 );
+		ajouter_transition( automate2, 0, 'd', 4 );
+
+		ajouter_transition( automate2, 1, 'a', 1 );
+		ajouter_transition( automate2, 1, 'b', 2 );
+
+		ajouter_transition( automate2, 2, 'a', 1 );
+		ajouter_transition( automate2, 2, 'b', 2 );
+		ajouter_transition( automate2, 2, 'c', 3 );
+
+		ajouter_transition( automate2, 3, 'a', 1 );
+		ajouter_transition( automate2, 3, 'b', 2 );
+		ajouter_transition( automate2, 3, 'c', 3 );
+		ajouter_transition( automate2, 3, 'd', 4 );
+
+		ajouter_etat_final( automate2, 4 );
+
+		TEST( 
+			1
+			&& expression 
+			&& automate1
+			&& automate2
+			&& automates_reconnaissent_le_meme_language( automate1, automate2 )
+			, result
+		);
+
+		liberer_automate( automate1 );
+		liberer_automate( automate2 );
+	}
+
+
+
+	{
+		Rationnel * expression = expression_to_rationnel( "(a*+(b.a)*.c)*.(b.c)*" );
+		Automate * automate1 = Glushkov( expression );
+
+		Automate * automate2 = creer_automate();
+		ajouter_etat_initial( automate2, 0 );
+		ajouter_transition( automate2, 0, 'a', 1 );
+		ajouter_transition( automate2, 0, 'b', 2 );
+		ajouter_transition( automate2, 0, 'c', 4 );
+		ajouter_transition( automate2, 0, 'b', 5 );
+		ajouter_transition( automate2, 1, 'a', 1 );
+		ajouter_transition( automate2, 1, 'b', 2 );
+		ajouter_transition( automate2, 1, 'c', 4 );
+		ajouter_transition( automate2, 1, 'b', 5 );
+		ajouter_transition( automate2, 2, 'a', 3 );
+		ajouter_transition( automate2, 3, 'b', 2 );
+		ajouter_transition( automate2, 3, 'c', 4 );
+		ajouter_transition( automate2, 4, 'a', 1 );
+		ajouter_transition( automate2, 4, 'b', 2 );
+		ajouter_transition( automate2, 4, 'c', 4 );
+		ajouter_transition( automate2, 4, 'b', 5 );
+		ajouter_transition( automate2, 5, 'c', 6 );
+		ajouter_transition( automate2, 6, 'b', 5 );
+		ajouter_etat_final( automate2, 0 );
+		ajouter_etat_final( automate2, 1 );
+		ajouter_etat_final( automate2, 4 );
+		ajouter_etat_final( automate2, 6 );
+
+		TEST( 
+			1
+			&& expression 
+			&& automate1
+			&& automate2
+			&& automates_reconnaissent_le_meme_language( automate1, automate2 )
+			, result
+		);
+
+		liberer_automate( automate1 );
+		liberer_automate( automate2 );
+	}
+
+	return result;
 }
 
-int main(int argc, char *argv[])
-{
-   if( ! test_glushkov() )
-    return 1; 
-   
-   return 0;
+
+int main(){
+
+	if( ! test_glushkov() ){ return 1; }
+
+	return 0;
 }

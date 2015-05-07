@@ -319,6 +319,10 @@ Ensemble *suivant(Rationnel *, int);
  */
 Automate *Glushkov(Rationnel *rat);
 
+Automate* creer_automate_complement(const Automate *automate);
+
+bool automates_reconnaissent_le_meme_language( Automate *automate1, Automate *automate2 );
+
 /**
  * @brief @todo
  * Teste si deux expressions reconnaissent le même langage.
