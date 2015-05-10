@@ -659,12 +659,11 @@ Automate *miroir( const Automate * automate)
 {
 
   Automate * nouvel_automate = creer_automate();//on part d'un nouvel automate
+  //Les états initiaux deviennent finaux, et inversement
   pour_tout_element(automate -> initiaux, inverser_initiaux_vers_finaux, ((Automate*) nouvel_automate));
   pour_tout_element(automate -> finaux, inverser_finaux_vers_initiaux, ((Automate*) nouvel_automate));
-  //on échange le statut des états initiaux et finaux
-  pour_toute_transition(automate, inverser_transition, ((Automate*) nouvel_automate));
   //on inverse le sens des transitions
-
+  pour_toute_transition(automate, inverser_transition, ((Automate*) nouvel_automate));
   return nouvel_automate;
 }
 

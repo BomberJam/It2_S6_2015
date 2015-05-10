@@ -679,7 +679,8 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
        else
 	ligne[n] = Star(ligne[numero_variable]);
     }      
-  ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.	  
+  //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
+  ligne[numero_variable] = NULL; 	  
   return ligne;
 }
   
