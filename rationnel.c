@@ -714,7 +714,7 @@ Rationnel *Arden(Automate *automate)
   Systeme tab = systeme(automate);
   int n = get_max_etat(automate);
   tab = resoudre_systeme(tab,n);
-  //return tab[n];
-  A_FAIRE_RETURN(NULL); 
+  return tab[n][n];
+  //A_FAIRE_RETURN(NULL); 
 }
 
