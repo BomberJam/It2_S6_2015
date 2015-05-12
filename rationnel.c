@@ -679,7 +679,8 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
        else
 	ligne[n] = Star(ligne[numero_variable]);
     }      
-  ligne[numero_variable] = NULL; //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.	  
+  //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
+  ligne[numero_variable] = NULL; 	  
   return ligne;
 }
   
@@ -713,7 +714,7 @@ Rationnel *Arden(Automate *automate)
   Systeme tab = systeme(automate);
   int n = get_max_etat(automate);
   tab = resoudre_systeme(tab,n);
-  //return tab[n];
-  A_FAIRE_RETURN(NULL); 
+  return tab[n][n];
+  //A_FAIRE_RETURN(NULL); 
 }
 

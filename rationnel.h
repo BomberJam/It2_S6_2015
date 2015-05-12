@@ -321,6 +321,12 @@ Ensemble *suivant(Rationnel *, int);
  */
 Automate *Glushkov(Rationnel *rat);
 
+/**
+ * @brief @todo
+ * @brief Créer l'automate complémentaire de l'automate passé en parmètre.
+ * @param Un automate
+ * @return Retourne l'automate complémentaire de l'automate passé en parmètre.
+ */
 Automate* creer_automate_complement(const Automate *automate);
 
 /**

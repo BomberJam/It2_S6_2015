@@ -59,6 +59,11 @@ typedef struct Cle {
  */
 Automate * creer_automate();
 
+/**
+ * @brief Compare deux automates et retourne si ceux-là ont le même langage ou non.
+ *
+ * @return 0 si les automates ne reconnaissent pas le même langage, 1 sinon.
+ */
 int automates_reconnaissent_le_meme_language( Automate *automate1, Automate *automate2 );
 
 
