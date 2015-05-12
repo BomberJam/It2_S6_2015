@@ -445,7 +445,7 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
       
     case STAR:
 
-      last = dernier(fils(rat));      
+      last = dernier(fils(rat));
       if(est_dans_l_ensemble(last, (intptr_t)position)) 
 	{
 	  first = premier(fils(rat));
@@ -614,8 +614,11 @@ bool meme_langage (const char *expr1, const char* expr2)
   return automates_reconnaissent_le_meme_language( min1, min2 );
 }
 
-void remplir_systeme(int origine, char lettre, int fin, void* data)
-{  
+
+
+void
+remplir_systeme(int origine, char lettre, int fin, void *data)
+{
   if (((Systeme)data)[origine][fin])
     {
       ((Systeme)data)[origine][fin] = Union(((Systeme)data)[origine][fin], Lettre(lettre));
@@ -625,14 +628,13 @@ void remplir_systeme(int origine, char lettre, int fin, void* data)
       ((Systeme)data)[origine][fin] = Lettre(lettre);
     }
 }
-
-
+ 
 Systeme systeme(Automate *automate)
 {
   int lignes = taille_ensemble(get_etats(automate)); 
-  int colonnes = lignes + 1;
-  Systeme tab = malloc(sizeof(*tab) * lignes);
-  
+  int colonnes = lignes + 1;  
+  Systeme tab = malloc(sizeof(*tab) * lignes); 
+ 
   for (int i = 0; i < lignes; i++)
     {
       tab[i] = malloc(sizeof(Rationnel*) * colonnes);
@@ -647,8 +649,10 @@ Systeme systeme(Automate *automate)
     }
   pour_toute_transition(automate, remplir_systeme, tab);
   
+
   return tab;
 }
+
 
 void print_ligne(Rationnel **ligne, int n)
 {

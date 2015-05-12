@@ -59,6 +59,7 @@ int test_suivant(){
           && taille_ensemble( e1 ) == 1
           , result);
        
+<<<<<<< HEAD
        TEST(
           1
           && rat
@@ -126,6 +127,58 @@ int test_suivant(){
        Ensemble * e2 = suivant(rat,2);
        Ensemble * e3 = suivant(rat,3);
        Ensemble * e4 = suivant(rat,4);
+=======
+    TEST(
+	 1
+	 && est_dans_l_ensemble(e, 1)
+	 && ! est_dans_l_ensemble(e, 2)
+	 && est_dans_l_ensemble(e, 3)
+	 && est_dans_l_ensemble(e, 4)
+	 , result);
+  }
+    
+<<<<<<< HEAD
+  {
+    Rationnel * rat;
+    rat = expression_to_rationnel("(a.a)*.(b+c*).(a.b*)");
+    numeroter_rationnel(rat);
+    Ensemble * e = suivant(rat, 2);
+=======
+<<<<<<< HEAD
+=======
+    {
+      Rationnel * rat;
+      rat = expression_to_rationnel("(a.a)*.(b+c*).(a.b*)");
+      numeroter_rationnel(rat);
+      Ensemble * e = suivant(rat, 2);
+>>>>>>> marespiaut
+       
+    TEST(
+	 1
+	 && est_dans_l_ensemble(e, 1)
+	 && ! est_dans_l_ensemble(e, 2)
+	 && est_dans_l_ensemble(e, 3)
+	 && est_dans_l_ensemble(e, 4)
+	 && est_dans_l_ensemble(e, 5)
+	 && ! est_dans_l_ensemble(e, 6)
+	 , result);
+  }
+    
+<<<<<<< HEAD
+  {
+    Rationnel * rat;
+    rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
+    numeroter_rationnel(rat);
+    Ensemble * e = suivant(rat, 2);
+=======
+>>>>>>> master
+    {
+       Rationnel * rat;
+       rat = expression_to_rationnel("(a.a)*.(b+c*).a.b*");
+       numeroter_rationnel(rat);
+       Ensemble * e = suivant(rat, 2);
+>>>>>>> marespiaut
+>>>>>>> bd08bef7c8c5a1df4beb98d4545d617ccba4e4ca
        
        TEST(
           1
