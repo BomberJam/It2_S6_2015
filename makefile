@@ -1,7 +1,7 @@
 TESTS_SOURCES=$(wildcard tests/test_*.c)
 TESTS=$(TESTS_SOURCES:.c=)
 
-CPPFLAGS=-g -ggdb -O0 -std=c11 -Wall -Werror -I.
+CPPFLAGS=-g -ggdb -O0 -std=c11 -Wall -Wextra -I.
 CFLAGS=-fPIC -ggdb -I. 
 LDLIBS= -lm
 
