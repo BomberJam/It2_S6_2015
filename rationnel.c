@@ -318,19 +318,20 @@ bool contient_mot_vide(Rationnel *rat)
   
   switch(get_etiquette(rat))
     {
+    //Si l'expression contient un epsilon ou une etoile, alors elle contient le mot vide
     case EPSILON:
     case STAR:
       return true;      
       break;
-      
+    //si on finit sur une lettre, alors l'expression ne contient pas le mot vide.
     case LETTRE:     
       return false;
       break;
-      
+     //Si il y a une union dans l'expression, on cherche si l'un des membres contient le mot vide. 
     case UNION:
       return contient_mot_vide(fils_gauche(rat)) || contient_mot_vide(fils_droit(rat));
       break;
-
+    //Si il y a une concaténation dans l'expression, on cherche si les membres contiennentt le mot vide. 
     case CONCAT:
       return contient_mot_vide(fils_gauche(rat)) && contient_mot_vide(fils_droit(rat));	    
       break;   
@@ -341,28 +342,34 @@ bool contient_mot_vide(Rationnel *rat)
 
 void trouver_premier(Ensemble * e, Rationnel * rat){
   if(!rat)
-    return;  
+    return;
+  //le premier est forcément une lettre de l'expression
   switch(get_etiquette(rat))
     {
     case EPSILON:
+      //Epsilon n'est pas une lettre, il ne peut pas etre un premier
       break;
       
-    case LETTRE:     
+    case LETTRE:
+      //on ajoute donc la lettre dès qu'on y arrive
       ajouter_element(e,(intptr_t)get_position_min(rat)); 
       break;
       
     case UNION:
+      //dans le cas d'une union, on parcourt les 2 membres, car l'un des deux membres pourrait contenir le mot vide.
       trouver_premier(e,fils_gauche(rat));
       trouver_premier(e,fils_droit(rat));
       break;
 
     case CONCAT:
+      //dans le cas d'une concaténation, si le fils gauche contient le mot vide, on cherche le premier dans le membre droit car il est celui qui suit. On prend ensuite le membre gauche car si c'est une étoile, il peut être différent de vide.
       if(contient_mot_vide(fils_gauche(rat)))
 	trouver_premier(e,fils_droit(rat));	
       trouver_premier(e,fils_gauche(rat));     	    
       break;
       
     case STAR:
+      //il n'ya qu'un seul membre dans l'étoile, on la parcourt donc jusqu'à tomber sur le premier.
       trouver_premier(e,fils(rat));
       break;    
     }  
@@ -383,18 +390,22 @@ void trouver_dernier(Ensemble * e, Rationnel * rat){
   switch(get_etiquette(rat))
     {
     case EPSILON:
+      //Epsilon n'est pas une lettre, il ne peut pas etre un dernier
       break;
       
-    case LETTRE:     
+    case LETTRE:
+      //on ajoute donc la lettre dès qu'on y arrive   
       ajouter_element(e,(intptr_t)get_position_min(rat));
       break;
       
     case UNION:
+      //dans le cas d'une union, on parcourt les 2 membres, car l'un des deux membres pourrait contenir le mot vide.
       trouver_dernier(e,fils_droit(rat));
       trouver_dernier(e,fils_gauche(rat));
       break;
 
     case CONCAT:
+       //dans le cas d'une concaténation, si le fils droit contient le mot vide, on cherche le dernier dans le membre gauche car il est celui qui suit. On prend ensuite le membre droit car si c'est une étoile, il peut être différent de vide.
       if(contient_mot_vide(fils_droit(rat)))
 	trouver_dernier(e,fils_gauche(rat));
 	    
@@ -402,6 +413,7 @@ void trouver_dernier(Ensemble * e, Rationnel * rat){
       break;
       
     case STAR:
+      //il n'ya qu'un seul membre dans l'étoile, on la parcourt donc jusqu'à tomber sur le dernier.
       trouver_dernier(e,fils(rat));
       break;    
     }  
@@ -426,7 +438,8 @@ Ensemble* trouver_suivant(Ensemble * e, Rationnel * rat, int position){
     case LETTRE:    
       break;
       
-    case UNION:     
+    case UNION:
+      //dans le cas d'une union, on parcourt les 2 membres, car l'un des deux membres pourrait contenir le mot vide.
       e = trouver_suivant(e, fils_gauche(rat), position);
       e = trouver_suivant(e, fils_droit(rat), position);   
       break;
@@ -621,10 +634,12 @@ remplir_systeme(int origine, char lettre, int fin, void *data)
 {
   if (((Systeme)data)[origine][fin])
     {
+      //s'il y a deja une expression dans la case de la matrice, alors on fait l'union de l'ancien et du nouveau membre.
       ((Systeme)data)[origine][fin] = Union(((Systeme)data)[origine][fin], Lettre(lettre));
     }
   else
     {
+      //Sinon on met simplement la valeur dans la case.
       ((Systeme)data)[origine][fin] = Lettre(lettre);
     }
 }
@@ -640,13 +655,16 @@ Systeme systeme(Automate *automate)
       tab[i] = malloc(sizeof(Rationnel*) * colonnes);
       for (int j = 0; j < colonnes; j++)
 	{
+	  //on initialise la matrice
 	  tab[i][j] = NULL;
 	}
       if (est_un_etat_final_de_l_automate(automate, i))
 	{
+	  //on rajoute epsilon dans la derniere colonne de la i ligne
 	  tab[i][colonnes-1] = Epsilon();
 	}
     }
+  //on parcourt les transitions de l'automate pour remplir la matrice.
   pour_toute_transition(automate, remplir_systeme, tab);
   
 
@@ -679,8 +697,10 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
   if(ligne[numero_variable] != NULL)
     {     
        if(ligne[n] != NULL)
+	 //Arden consiste à faire l'étoile du contenu de la case visée, puis de concaténer le reste de la ligne,
 	 ligne[n] = Concat(Star(ligne[numero_variable]), ligne[n]);
        else
+	//mais si il n'y a que la case visée qui est non vide, on se contente d'y mettre une étoile.
 	ligne[n] = Star(ligne[numero_variable]);
     }      
   //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
@@ -692,11 +712,14 @@ Rationnel **resoudre_variable_arden(Rationnel **ligne, int numero_variable, int 
 Rationnel **substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **ligne_substituee, int n) 
 {
   Rationnel **nouvelle_ligne = malloc(sizeof(Rationnel));
+  //on effectue arden dans le cas ou (n,n) serait non vide.
   nouvelle_ligne = resoudre_variable_arden(ligne_substituee,numero_variable,n); 
   for(int i = 0; i <= n; i++) 
     {
+      //on concatene la ligne substituee à la place de la variable a remplacer.
       nouvelle_ligne[i] = Union(Concat(ligne[numero_variable],ligne_substituee[i]), ligne[i]);
     }
+  //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
   nouvelle_ligne[numero_variable] = NULL;  
   return nouvelle_ligne;
 }
@@ -706,6 +729,7 @@ Systeme resoudre_systeme(Systeme systeme, int n)
   for(int i = 0; i < n; i++)
     {    
       for(int j = n-1; j >= 0; j--)
+	//On applique la fonction précédente sur toutes les lignes du systeme.
 	systeme[i] = substituer_variable(systeme[i], j, systeme[j],n);
       print_systeme(systeme,n);
       printf("\n");
@@ -719,6 +743,5 @@ Rationnel *Arden(Automate *automate)
   int n = get_max_etat(automate);
   tab = resoudre_systeme(tab,n);
   return tab[n][n];
-  //A_FAIRE_RETURN(NULL); 
 }
 
