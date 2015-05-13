@@ -15,20 +15,21 @@ int test_substituer_variable()
     ajouter_transition( automate, 0, 'a', 1 );   
     ajouter_transition( automate, 0, 'b', 2 );
     ajouter_transition( automate, 1, 'b', 2 );
-    ajouter_transition( automate, 2, 'a', 0 );
+    ajouter_transition( automate, 2, 'a', 0 );    
+    ajouter_transition( automate, 2, 'a', 1 );
     ajouter_etat_initial( automate, 0);
     ajouter_etat_final( automate, 1);
     ajouter_etat_final( automate, 2);
     
     Systeme tab = systeme(automate);
-    Rationnel **res = substituer_variable(tab[1],2,tab[2],3);
-    print_ligne(res,3);
+    Rationnel **res = substituer_variable(tab[0],2,tab[2],3);
+
     TEST(
 	 1
 	 && get_etiquette(res[0]) == CONCAT
-	 && res[1] == NULL
+	 && get_etiquette(res[1]) == UNION
 	 && res[2] == NULL
-	 && get_etiquette(res[3]) == UNION
+	 && get_lettre(res[3]) == 'b'
 	 , result
 	 );
   }
@@ -43,7 +44,7 @@ int test_substituer_variable()
     ajouter_etat_initial( automate, 0);
     ajouter_etat_final( automate, 2);
 
-    Systeme tab = systeme(automate);
+    Systeme tab = systeme(automate);    
     Rationnel **res = substituer_variable(tab[0],1,tab[1],3);
 
     TEST(
@@ -158,9 +159,10 @@ int test_substituer_variable()
     ajouter_etat_final( automate, 0);
     ajouter_etat_final( automate, 3);
    
-    Systeme tab = systeme(automate);
+    Systeme tab = systeme(automate);  
+  
     Rationnel **res = substituer_variable(tab[2],3,tab[3],4);
-    
+
     TEST(
 	 1
 	 && get_etiquette(res[0]) == UNION

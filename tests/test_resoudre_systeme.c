@@ -38,7 +38,7 @@ int test_resoudre_systeme()
 	 , result
 	 );
   }
-  /*
+  
   {
     
     Automate * automate = creer_automate();
@@ -69,7 +69,7 @@ int test_resoudre_systeme()
 	 , result
 	 );
   }
-  *//*
+ 
   {
     Automate * automate = creer_automate();
 
@@ -104,7 +104,7 @@ int test_resoudre_systeme()
 
 
   }
-    *//*
+    
   {
     Automate * automate = creer_automate();
 
@@ -138,7 +138,7 @@ int test_resoudre_systeme()
 
 
   }
-      */
+      
   return result;
 }
 
