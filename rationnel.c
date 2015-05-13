@@ -805,23 +805,29 @@ resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 Rationnel**
 substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **ligne_substituee, int n) 
 {
-  Rationnel **nouvelle_ligne = malloc(sizeof(Rationnel));
-  //on effectue arden dans le cas ou (n,n) serait non vide.
-  nouvelle_ligne = resoudre_variable_arden(ligne_substituee, numero_variable, n); 
+  //on effectue arden dans le cas ou (numero_variable,numero_variable) serait non vide.
+  if(ligne_substituee[numero_variable] != NULL)
+    {
+      ligne = resoudre_variable_arden(ligne_substituee, numero_variable, n);
+    } 
+  //on veut par exemple substituer ax2 de x0 = ax1 + ax2 + bX3 par x2 = cX1
   for (int i = 0; i <= n; i++) 
     {
-      //on concatene la ligne substituee à la place de la variable a remplacer.
-      nouvelle_ligne[i] = Union(Concat(ligne[numero_variable], ligne_substituee[i]), ligne[i]);
+      //on parourt la ligne substituee et la ligne tout en concatenant les Xi entre eux, puis en faisant l'union avec le contenu de la case ligne[i] si celle-ci est déjà occupée
+      //la concaténation donne (a.c)X1, l'union place cette expression en case X1, ce qui donne [a + (a.c)]X1. 
+      ligne[i] = Union(Concat(ligne[numero_variable], ligne_substituee[i]), ligne[i]);
     }
   //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
-  nouvelle_ligne[numero_variable] = NULL;
-  
-  return nouvelle_ligne;
+  ligne[numero_variable] = NULL;
+  return ligne;
 }
 
 Systeme
 resoudre_systeme(Systeme systeme, int n)
 {
+  //print_systeme(systeme,n);
+  //printf("\n%d\n",n);
+
   for (int i = 0; i < n; i++)
     {    
       for (int j = n - 1; j >= 0; j--)
@@ -829,8 +835,8 @@ resoudre_systeme(Systeme systeme, int n)
 	  //On applique la fonction précédente sur toutes les lignes du systeme.
 	  systeme[i] = substituer_variable(systeme[i], j, systeme[j], n);
 	}
-      print_systeme(systeme,n);
-      printf("\n");
+      // print_systeme(systeme,n);
+      //printf("\n");
     }
   
   return systeme;
