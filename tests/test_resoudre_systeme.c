@@ -19,9 +19,15 @@ int test_resoudre_systeme()
     ajouter_etat_initial( automate, 0);
     ajouter_etat_final( automate, 1);
     ajouter_etat_final( automate, 2);
-
-    Systeme tab = systeme(automate);   
+ 
+    Systeme tab = systeme(automate);
+        printf("\n");
+    print_systeme(tab,3);
+    printf("\n");
+    
     tab = resoudre_systeme(tab, 3);
+    print_systeme(tab,3);    
+
 
     TEST(
 	 1
@@ -34,11 +40,11 @@ int test_resoudre_systeme()
 	 && tab[2][0] == NULL
 	 && tab[2][1] == NULL
 	 && tab[2][2] == NULL
-	 && get_etiquette(tab[2][3]) == CONCAT
+	 && get_etiquette(tab[0][3]) == UNION
 	 , result
 	 );
   }
-  
+  /*
   {
     
     Automate * automate = creer_automate();
@@ -137,8 +143,8 @@ int test_resoudre_systeme()
 	 );
 
 
-  }
-      
+	 }
+      */
   return result;
 }
 

@@ -20,19 +20,22 @@ int test_resoudre_variable_arden()
     ajouter_etat_final( automate, 0);
     ajouter_etat_final( automate, 2);
 
-    Systeme tab = systeme(automate); 
+    Systeme tab = systeme(automate);
+    printf("\n");
+    print_systeme(tab,3);
+    printf("\n");
     Rationnel **res = resoudre_variable_arden(tab[2],2,3);
-  
+    print_systeme(tab,3);
     TEST(
 	 1
-	 && get_lettre(res[0]) == 'a'
+	 && get_etiquette(res[0]) == CONCAT
 	 && res[1] == NULL
 	 && res[2] == NULL
 	 && get_etiquette(res[3]) == STAR	 
 	 , result
 	 );
   }
-  
+  /*
   {
     Automate * automate = creer_automate();
 
@@ -140,7 +143,7 @@ int test_resoudre_variable_arden()
 	 , result
 	 );   
   }
-
+  */
   return result;
 }
 

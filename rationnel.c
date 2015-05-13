@@ -783,71 +783,66 @@ print_systeme(Systeme systeme, int n)
 Rationnel**
 resoudre_variable_arden(Rationnel **ligne, int numero_variable, int n)
 {     
-  if (ligne[numero_variable] != NULL)
-    {     
-      if (ligne[n] != NULL)
-	{
-	  //Arden consiste à faire l'étoile du contenu de la case visée, puis de concaténer le reste de la ligne,
-	  ligne[n] = Concat(Star(ligne[numero_variable]), ligne[n]);
-	}
-      else
-	{
-	  //mais si il n'y a que la case visée qui est non vide, on se contente d'y mettre une étoile.
-	  ligne[n] = Star(ligne[numero_variable]);
-	}
-    }      
-  //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
+  if (ligne[numero_variable] == NULL)
+    {
+      return ligne;
+    }  
+  Rationnel **tmp = ligne[numero_variable];
+  //on supprime ce membre-ci vu qu'on l'a stocké dans une variable temporaire.
   ligne[numero_variable] = NULL;
-  
+  //Arden consiste à faire l'étoile du contenu de la case visée, puis de concaténer le reste de la ligne,
+  tmp = Star(tmp);     
+      for(int i = 0;i<=n;i++)
+	if (ligne[i])
+	  //puis de concaténer avec le reste de la ligne,
+	  ligne[i] = Concat(tmp, ligne[i]);       
   return ligne;
 }
  
 Rationnel**
 substituer_variable(Rationnel **ligne, int numero_variable, Rationnel **ligne_substituee, int n) 
 {
-  //on effectue arden dans le cas ou (numero_variable,numero_variable) serait non vide.
-  if(ligne_substituee[numero_variable] != NULL)
+  if (ligne[numero_variable] == NULL)
     {
-      ligne = resoudre_variable_arden(ligne_substituee, numero_variable, n);
-    } 
+      return ligne;
+    }
+  Rationnel **tmp = ligne[numero_variable];
+  //on supprime ce membre-ci vu qu'on l'a stocké dans une variable temporaire.
+  ligne[numero_variable] = NULL;
   //on veut par exemple substituer ax2 de x0 = ax1 + ax2 + bX3 par x2 = cX1
   for (int i = 0; i <= n; i++) 
     {
       //on parourt la ligne substituee et la ligne tout en concatenant les Xi entre eux, puis en faisant l'union avec le contenu de la case ligne[i] si celle-ci est déjà occupée
-      //la concaténation donne (a.c)X1, l'union place cette expression en case X1, ce qui donne [a + (a.c)]X1. 
-      ligne[i] = Union(Concat(ligne[numero_variable], ligne_substituee[i]), ligne[i]);
+      //la concaténation donne (a.c)X1, l'union place cette expression en case X1, ce qui donne [a + (a.c)]X1.
+      if(ligne_substituee[i])
+	{	  	      
+	  ligne[i] = Union(Concat(tmp, ligne_substituee[i]), ligne[i]);
+	}      
     }
-  //une fois ajoutée aux autres membres de l'expression, on supprime ce membre-ci.
-  ligne[numero_variable] = NULL;
   return ligne;
 }
 
 Systeme
 resoudre_systeme(Systeme systeme, int n)
 {
-  //print_systeme(systeme,n);
-  //printf("\n%d\n",n);
-
   for (int i = 0; i < n; i++)
-    {    
-      for (int j = n - 1; j >= 0; j--)
+    {
+      resoudre_variable_arden(systeme[i], i, n);
+      for (int j = 0; j < n; j++)
 	{
-	  //On applique la fonction précédente sur toutes les lignes du systeme.
-	  systeme[i] = substituer_variable(systeme[i], j, systeme[j], n);
+	  substituer_variable(systeme[j], i,systeme[i], n);
 	}
-      // print_systeme(systeme,n);
-      //printf("\n");
-    }
-  
+    }  
   return systeme;
 }
 
 Rationnel*
 Arden(Automate *automate)
 {
+  automate = creer_automate_deterministe(automate);
   Systeme tab = systeme(automate);
   int n = get_max_etat(automate);
   tab = resoudre_systeme(tab, n);
-  return tab[n][n];
+  return tab[0][n];
 }
 
